@@ -1,0 +1,33 @@
+{
+    "creatingLibrary": {
+        "name": "MediaInfoLib",
+        "version": "24.06",
+        "url": "https://mediaarea.net/MediaInfo"
+    },
+    "media": {
+        "@ref": "",
+        "track": [
+            {
+                "@type": "General",
+                "ImageCount": 1,
+                "Format": "JPEG",
+                "FileSize": "62353",
+                "StreamSize": 0
+            },
+            {
+                "@type": "Image",
+                "Format": "JPEG",
+                "Width": 591,
+                "Height": 1280,
+                "ColorSpace": "YUV",
+                "ChromaSubsampling": "4:2:0",
+                "BitDepth": 8,
+                "Compression_Mode": "Lossy",
+                "StreamSize": 62353,
+                "extra": {
+                    "ColorSpace_ICC": "RGB"
+                }
+            }
+        ]
+    }
+}
