@@ -15,6 +15,7 @@ import {
     Box,
     TableContainer,
     TableSortLabel,
+    Pagination,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { deleteReport } from "../../service/reports";
@@ -25,10 +26,16 @@ export function ReportsComp({ reports }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortedReports, setSortedReports] = useState([...reports]);
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 5;
 
     useEffect(() => {
         setSortedReports([...reports]);
     }, [reports]);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
 
     const handleReportEdit = (reportID) => {
         navigate(`/dashboard/reports/${reportID}/edit`);
@@ -106,6 +113,11 @@ export function ReportsComp({ reports }) {
         }
         return text;
     };
+
+    const paginatedReports = filteredReports.slice(
+        (currentPage - 1) * recordsPerPage,
+        currentPage * recordsPerPage
+    );
 
     return (
         <Box sx={{ p: 3 }}>
@@ -195,7 +207,7 @@ export function ReportsComp({ reports }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredReports.map((report) => (
+                        {paginatedReports.map((report) => (
                             <TableRow key={report.reportID}>
                                 <TableCell padding="checkbox">
                                     <Checkbox
@@ -327,6 +339,28 @@ export function ReportsComp({ reports }) {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Box
+                display="flex"
+                justifyContent="center"
+                mt={2}
+                backgroundColor="#fff"
+                p={1}
+                borderRadius={15}
+                maxWidth={300}
+                sx={{
+                    "& .MuiPagination-ul": { justifyContent: "center" },
+                    marginTop: "20px",
+                    display: "-webkit-inline-box",
+                }}
+            >
+                <Pagination
+                    count={Math.ceil(filteredReports.length / recordsPerPage)}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    dir="rtl"
+                />
+            </Box>
         </Box>
     );
 }

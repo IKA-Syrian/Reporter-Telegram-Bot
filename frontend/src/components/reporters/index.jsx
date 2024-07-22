@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { deleteReporter } from "../../service/reporters";
 import {
     Table,
     TableHead,
@@ -16,8 +15,10 @@ import {
     Box,
     TableContainer,
     TableSortLabel,
+    Pagination,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import { deleteReporter } from "../../service/reporters";
 
 export function ReportersComp({ reporters }) {
     const navigate = useNavigate();
@@ -25,10 +26,16 @@ export function ReportersComp({ reporters }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortedReporters, setSortedReporters] = useState([...reporters]);
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 25;
 
     useEffect(() => {
         setSortedReporters([...reporters]);
     }, [reporters]);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
 
     const handleReporterEdit = (reporterId) => {
         navigate(`/dashboard/reporters/${reporterId}/edit`);
@@ -103,6 +110,11 @@ export function ReportersComp({ reporters }) {
             reporter.city.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const paginatedReporters = filteredReporters.slice(
+        (currentPage - 1) * recordsPerPage,
+        currentPage * recordsPerPage
+    );
+
     return (
         <Box sx={{ p: 3 }}>
             <Box
@@ -168,10 +180,7 @@ export function ReportersComp({ reporters }) {
                                 />
                             </TableCell>
                             {[
-                                {
-                                    key: "TelegramId",
-                                    label: "المعرف",
-                                },
+                                { key: "TelegramId", label: "المعرف" },
                                 { key: "firstName", label: "الأسم الاول" },
                                 { key: "lastName", label: "الأسم الأخير" },
                                 { key: "phoneNumber", label: "رقم الهاتف" },
@@ -200,7 +209,7 @@ export function ReportersComp({ reporters }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredReporters.map((reporter) => (
+                        {paginatedReporters.map((reporter) => (
                             <TableRow key={reporter.TelegramId}>
                                 <TableCell padding="checkbox">
                                     <Checkbox
@@ -269,6 +278,28 @@ export function ReportersComp({ reporters }) {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Box
+                display="flex"
+                justifyContent="center"
+                mt={2}
+                backgroundColor="#fff"
+                p={1}
+                borderRadius={15}
+                maxWidth={300}
+                sx={{
+                    "& .MuiPagination-ul": { justifyContent: "center" },
+                    marginTop: "20px",
+                    display: "-webkit-inline-box",
+                }}
+            >
+                <Pagination
+                    count={Math.ceil(filteredReporters.length / recordsPerPage)}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    dir="rtl"
+                />
+            </Box>
         </Box>
     );
 }
