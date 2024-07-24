@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Delete, Download } from "@mui/icons-material";
 import ReactPlayer from "react-player";
+import DOMPurify from "dompurify";
 
 const modalStyle = {
     position: "absolute",
@@ -46,7 +47,7 @@ export function ReportForm({ report }) {
         const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : DOMPurify.sanitize(value),
         });
     };
 
@@ -92,7 +93,7 @@ export function ReportForm({ report }) {
     };
 
     return (
-        <Paper sx={{ p: 3, maxWidth: 600, mx: "auto", mt: 4 }}>
+        <Paper sx={{ p: 3, maxWidth: 600, mx: "auto", mt: 4 }} color="primary">
             <Box sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
                     Report Form

@@ -4,6 +4,7 @@ import viteLogo from "/vite.svg";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import "./App.css";
+import "./index.css";
 import {
     MainPageLogin,
     Dashboard,
@@ -14,17 +15,26 @@ import {
     SingleReport,
     SingleReporter,
     Logs,
+    Users,
+    AddUser,
 } from "./pages";
+const getCssVariable = (name) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name);
+
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#3f51b5",
-        },
-        secondary: {
-            main: "#f50057",
+            main: getCssVariable("--color-primary-100").trim(),
+            light: getCssVariable("--color-primary-200").trim(),
+            dark: getCssVariable("--color-primary-300").trim(),
         },
         background: {
-            default: "#f4f6f8",
+            paper: getCssVariable("--color-surface-100").trim(),
+            default: getCssVariable("--color-surface-200").trim(),
+        },
+        text: {
+            primary: getCssVariable("--color-surface-500").trim(),
+            secondary: getCssVariable("--color-surface-400").trim(),
         },
     },
     typography: {
@@ -61,6 +71,8 @@ const App = () => (
                     path="/dashboard/reporters/:id/edit"
                     element={<EditReporter />}
                 />
+                <Route path="/dashboard/users" element={<Users />} />
+                <Route path="/dashboard/users/add" element={<AddUser />} />
                 <Route path="/dashboard/logs" element={<Logs />} />
                 <Route path="*" element={<h1>Not Found</h1>} />
             </Routes>

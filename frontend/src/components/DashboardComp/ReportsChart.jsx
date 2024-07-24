@@ -142,10 +142,10 @@ export default function ReportsChart({ reports, reporters }) {
                 <Select
                     value={dateRange}
                     onChange={(e) => setDateRange(e.target.value)}
-                    sx={{
-                        backgroundColor: "white",
-                        minWidth: 120, // Adjust the width as per your requirement
-                    }}
+                    // sx={{
+                    //     backgroundColor: "white",
+                    //     minWidth: 120, // Adjust the width as per your requirement
+                    // }}
                 >
                     <MenuItem value="0">اليوم</MenuItem>
                     <MenuItem value="1">الأمس</MenuItem>
@@ -156,7 +156,7 @@ export default function ReportsChart({ reports, reporters }) {
                 </Select>
             </Box>
             <Box sx={{ width: "100%", maxWidth: "900px" }}>
-                <ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={400} margin="auto">
                     <LineChart
                         data={reportData.map((report, index) => ({
                             date: report.date,
@@ -164,7 +164,7 @@ export default function ReportsChart({ reports, reporters }) {
                             reporters: reporterData[index]?.count || 0,
                         }))}
                     >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        {/* <CartesianGrid strokeDasharray="0 0" stroke="#e0e0e0" /> */}
                         <XAxis
                             dataKey="date"
                             tickFormatter={(tick) => {

@@ -12,7 +12,13 @@ export function DashboardComp({ reports, reporters }) {
             <ReportsChart reports={reports} reporters={reporters} />
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 2, mb: 2, backgroundColor: "#eeeef7" }}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            mb: 2,
+                            backgroundColor: "var(--color-surface-600)",
+                        }}
+                    >
                         <Typography variant="h5" gutterBottom>
                             أحدث المراسلين
                         </Typography>
@@ -20,7 +26,13 @@ export function DashboardComp({ reports, reporters }) {
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 2, mb: 2, backgroundColor: "#eeeef7" }}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            mb: 2,
+                            backgroundColor: "var(--color-surface-600)",
+                        }}
+                    >
                         <Typography variant="h5" gutterBottom>
                             أحدث التقارير
                         </Typography>

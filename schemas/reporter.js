@@ -18,6 +18,11 @@ const reporterSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
+    position: {
+        type: String,
+        enum: ['مراسل', 'محرر', 'مدير', 'مدير عام', 'متعاون', 'مدير المراسلين', 'الأرشيف', 'شركات'],
+        required: false
+    },
     city: {
         type: String,
         required: false
@@ -28,7 +33,7 @@ const reporterSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     Verified: {
         type: Boolean,

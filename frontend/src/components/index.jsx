@@ -5,3 +5,4 @@ export { SingleReportComp } from "./reports/SingleReport";
 export { Layout } from "./Layout";
 export { SingleReporterComp } from "./reporters/SingleReporters";
 export { LogsComp } from "./LogsComp";
+export { UsersComp } from "./UsersComp";

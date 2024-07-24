@@ -5,11 +5,37 @@
   width: 100%;
   height: 100vh;
   color-scheme: light dark;
+  --color-primary-100: #20bcfa;
+  --color-primary-200: #53c3fb;
+  --color-primary-300: #71cbfb;
+  --color-primary-400: #8ad2fc;
+  --color-primary-500: #a0dafd;
+  --color-primary-600: #b5e1fd;
+  /** CSS DARK THEME SURFACE COLORS */
+  --color-surface-100: #4f4d4d;
+  --color-surface-200: #615f5f;
+  --color-surface-300: #737171;
+  --color-surface-400: #868484;
+  --color-surface-500: #999797;
+  --color-surface-600: #acabab;
+  --color-surface-700: #ffffff;
+
+  --color-secondary-100: #f9f9f9;
+  --color-secondary-200: #f2f2f2;
+  --color-secondary-300: #ebebeb;
+  --color-secondary-400: #e4e4e4;
+  --color-secondary-500: #dddddd;
+  --color-secondary-600: #d6d6d6;
+  --color-secondary-700: #cfcfcf;
+
+
+
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: var(--color-surface-300);
   margin: 0;
   
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }

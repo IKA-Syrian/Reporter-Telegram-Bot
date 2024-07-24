@@ -9,13 +9,28 @@ import {
     Checkbox,
     Typography,
     Paper,
+    MenuItem,
+    Select,
+    InputLabel,
 } from "@mui/material";
+import DOMPurify from "dompurify";
 
 export function ReporterForm({ reporter }) {
+    const positions = [
+        "متعاون",
+        "مراسل",
+        "محرر",
+        "مدير",
+        "مدير عام",
+        "مدير المراسلين",
+        "الأرشيف",
+        "شركات",
+    ];
     const [formData, setFormData] = useState({
         firstName: reporter.firstName,
         lastName: reporter.lastName,
         phoneNumber: reporter.phoneNumber,
+        position: reporter.position,
         city: reporter.city,
         isBlocked: reporter.isBlocked,
         Verified: reporter.Verified,
@@ -25,7 +40,7 @@ export function ReporterForm({ reporter }) {
         const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : DOMPurify.sanitize(value),
         });
     };
 
@@ -86,6 +101,38 @@ export function ReporterForm({ reporter }) {
                         onChange={handleChange}
                         fullWidth
                     />
+                </Box>
+                <Box mb={2}>
+                    <InputLabel
+                        id="reporterPosition-label"
+                        name="reportStatus"
+                        sx={{
+                            textAlign: "left",
+                            display: "flex",
+                        }}
+                    >
+                        الصفة
+                    </InputLabel>
+                    <Select
+                        fullWidth
+                        labelId="reporterPosition-label"
+                        id="reporterPosition"
+                        value={formData.position}
+                        label="الصفة"
+                        onChange={handleChange}
+                        sx={{
+                            display: "block",
+                        }}
+                    >
+                        {positions.map((position) => (
+                            <MenuItem
+                                value={position}
+                                sx={{ display: "block", textAlign: "center" }}
+                            >
+                                {position}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </Box>
                 <Box mb={2}>
                     <FormControlLabel

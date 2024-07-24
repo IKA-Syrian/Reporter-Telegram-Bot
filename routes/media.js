@@ -5,6 +5,9 @@ const ffmpeg = require('fluent-ffmpeg');
 const sharp = require('sharp');
 const { mediaInfoFactory } = require('mediainfo.js')
 const Reports = require('../schemas/reports');
+const User = require('../schemas/users');
+const Logs = require('../schemas/log');
+const authMiddleware = require('../handler/authMiddleware');
 
 async function getMediaInfo(filePath) {
     const mediaInfo = await mediaInfoFactory({ format: 'object' });
@@ -39,7 +42,7 @@ async function getMediaInfo(filePath) {
 
 
 
-routes.post('/info', async (req, res) => {
+routes.post('/info', authMiddleware, async (req, res) => {
     try {
         const { filePath, mimeType } = req.body;
         // const filepath = path.join(`${filePath}`);
@@ -95,6 +98,43 @@ routes.put('/downloadCount', async (req, res) => {
     }
 })
 
-
+routes.post('/download', authMiddleware, async (req, res) => {
+    // try {
+    const { filePath, reportID, username } = req.body;
+    console.log(filePath, reportID, username);
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).send({ "error": "User not found" });
+    }
+    const edetingReport = await Reports.findOne({ reportID });
+    if (!edetingReport) {
+        return res.status(404).send({ "error": "Report not found" });
+    }
+    const attachment = edetingReport.reportAttachments.find(attachment => attachment.filePath === filePath);
+    attachment.downloadCount += 1;
+    const newData = await Reports.findOneAndUpdate({ reportID }, { reportAttachments: [...edetingReport.reportAttachments] }, {
+        new: true
+    });
+    await Logs.create({
+        userID: user._id,
+        ActionType: "DOWNLOAD MEDIA",
+        logData: {
+            from: edetingReport,
+            to: newData,
+        }
+    });
+    const fileName = `${attachment.file_unique_id}.${attachment.mime_type}`;
+    const fileAbsoultePath = `/root/telegram-image-src/${filePath.split('/').slice(4).join('/')}`;
+    return res.download(fileAbsoultePath, fileName, (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({ "error": "Something went wrong" })
+        }
+    })
+    // } catch (error) {
+    //     console.log(error)
+    //     return res.status(500).send({ "error": "Something went wrong" })
+    // }
+});
 
 module.exports = routes;

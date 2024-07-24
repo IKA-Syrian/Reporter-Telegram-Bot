@@ -1,3 +1,5 @@
+
+
 #root {
   direction: rtl;
   text-align: center;
@@ -51,13 +53,13 @@ body{
 
 .reports-table th,
 .reports-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  /* border: 1px solid #ddd; */
+  /* padding: 8px; */
   text-align: center;
 }
 
 .reports-table th {
-  background-color: #1976d2;
+  /* background-color: #1976d2; */
   font-weight: bold;
 }
 
@@ -99,7 +101,7 @@ body{
 }
 
 .edit-button {
-  background-color: #4CAF50;
+  background-color: limegreen;
   color: white;
 }
 

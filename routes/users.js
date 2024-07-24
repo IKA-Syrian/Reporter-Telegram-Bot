@@ -28,9 +28,49 @@ router.get("/:username", authMiddleware, async (req, res) => {
     }
 });
 
-// router.post("/", async (req, res) => {
-//     try {
-//         const
-//     }
+router.post("/", authMiddleware, async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ username, email, password: hashedPassword });
+        await user.save();
+        res.status(201).json({
+            message: "User created successfully",
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
+
+router.put("/:id", authMiddleware, async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.findByIdAndUpdate(req.params.id, {
+            username,
+            email,
+            password: hashedPassword,
+        });
+        res.status(200).json({
+            message: "User updated successfully",
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json({
+            message: "User deleted successfully",
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
 
 module.exports = router;

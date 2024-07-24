@@ -38,11 +38,16 @@ router.post('/', async (req, res) => {
 
             if (text === '/verify') {
                 global.buttons = {
+                    keyboard: [
+                        { text: 'رقم الهاتف', callback_data: 'phoneNumber', request_contact: true },
+                    ],
                     inline_keyboard: [
                         [
                             { text: 'الأسم الأول', callback_data: 'firstName' },
                             { text: 'الأسم الأخير', callback_data: 'lastName' },
-                            { text: 'رقم الهاتف', callback_data: 'phoneNumber' },
+
+                        ],
+                        [
                             { text: 'المدينة', callback_data: 'city' }
                         ]
                     ]
@@ -70,7 +75,7 @@ router.post('/', async (req, res) => {
                     });
                     return res.status(200).send('OK');
                 } else {
-                    const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك،*`;
+                    const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك، هل توافق على مشاركة رقمك؟*`;
                     await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -89,9 +94,16 @@ router.post('/', async (req, res) => {
                         [
                             { text: 'عنوان التقرير', callback_data: 'reportTitle' },
                             { text: 'التقرير', callback_data: 'reportContent' },
+
+                        ],
+                        [
                             { text: 'عدد المرفقات', callback_data: 'reportNumberOfAttachments' },
                             { text: 'المرفقات', callback_data: 'reportAttachments' },
-                            { text: 'موقع الواقعة', callback_data: 'reportLocation' }
+
+                        ],
+                        [
+                            { text: 'موقع الواقعة', callback_data: 'reportLocation' },
+                            { text: 'روابط إضافية', callback_data: 'reportExtraLinks' }
                         ]
                     ]
                 }
@@ -102,6 +114,7 @@ router.post('/', async (req, res) => {
                         body: JSON.stringify({
                             chat_id: chatId,
                             text: 'يرجى إرسال تقريرك.',
+                            parse_mode: 'HTML',
                             reply_markup: global.reportButtons
                         })
                     });
@@ -132,9 +145,9 @@ router.post('/', async (req, res) => {
                     }
 
                     global.buttons = {
-                        inline_keyboard: [
-                            global.buttons.inline_keyboard[0].filter(Feild => Feild.callback_data !== field)
-                        ]
+                        inline_keyboard: global.buttons.inline_keyboard.map(row =>
+                            row.filter(button => button.callback_data !== field)
+                        )
                     };
 
                     const updatedUser = await Reporter.findOneAndUpdate(
@@ -213,10 +226,11 @@ router.post('/', async (req, res) => {
                             SampleData.push({ chatId, awaitingField: 'reportAttachments', mainMessageID: currentData['mainMessageID'], Data: "report", ColumnName: "reportAttachments" });
                         }
                         global.reportButtons = {
-                            inline_keyboard: [
-                                global.reportButtons.inline_keyboard[0].filter(Feild => Feild.callback_data !== field)
-                            ]
+                            inline_keyboard: global.reportButtons.inline_keyboard.map(row =>
+                                row.filter(button => button.callback_data !== field)
+                            )
                         };
+
                         delete currentData.awaitingField;
                         await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                             method: 'POST',
@@ -251,10 +265,11 @@ router.post('/', async (req, res) => {
                             await Report.findOneAndUpdate({ TelegramId: message.from.id, reportID: currentData['mainMessageID'] }, { [currentData.ColumnName]: [...prvData.reportAttachments, { reportID: currentData['mainMessageID'], file_unique_id: fileData.file_unique_id, filePath, mime_type, downloadCount: 0 }] }, { new: true });
 
                             global.reportButtons = {
-                                inline_keyboard: [
-                                    global.reportButtons.inline_keyboard[0].filter(Feild => Feild.callback_data !== field)
-                                ]
+                                inline_keyboard: global.reportButtons.inline_keyboard.map(row =>
+                                    row.filter(button => button.callback_data !== field)
+                                )
                             };
+
 
                             await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                                 method: 'POST',
@@ -279,16 +294,27 @@ router.post('/', async (req, res) => {
                             return res.status(200).send('OK');
                         }
                         // Append the new file path to the attachments array
+                    } else if (field === "reportExtraLinks") {
+                        currentData[field] = text;
+                        delete currentData.awaitingField;
+                        if (text.split('\n').length > 1) {
+                            text.split('\n')
+                            await Report.findOneAndUpdate({ TelegramId: message.from.id, reportID: currentData['mainMessageID'] }, { [currentData.ColumnName]: text.split('\n') }, { new: true });
+                        } else {
+                            await Report.findOneAndUpdate({ TelegramId: message.from.id, reportID: currentData['mainMessageID'] }, { [currentData.ColumnName]: currentData[field] }, { new: true });
+
+                        }
                     } else {
                         currentData[field] = text;
                         delete currentData.awaitingField;
                     }
 
                     global.reportButtons = {
-                        inline_keyboard: [
-                            global.reportButtons.inline_keyboard[0].filter(Feild => Feild.callback_data !== field)
-                        ]
+                        inline_keyboard: global.reportButtons.inline_keyboard.map(row =>
+                            row.filter(button => button.callback_data !== field)
+                        )
                     };
+
 
                     const updatedReport = await Report.findOneAndUpdate({ TelegramId: message.from.id, reportID: currentData['mainMessageID'] }, { [currentData.ColumnName]: currentData[field] }, { new: true });
 
@@ -379,7 +405,7 @@ router.post('/', async (req, res) => {
                     }
                 }
             }
-            // res.status(200).send('OK');
+            res.status(200).send('OK');
         } catch (err) {
             console.error(err);
             return res.status(500).send(err);

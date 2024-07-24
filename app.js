@@ -12,7 +12,7 @@ const routes = require('./routes');
 const app = express();
 // const MongoStore = require('connect-mongo');
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://192.168.1.38:5173', 'http://38.242.243.210:5173'],  // Use the correct origin without a trailing slash
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://192.168.1.38:5173', 'http://38.242.243.210:5173', 'https://dashboard.iaulibrary.com'],  // Use the correct origin without a trailing slash
     credentials: true
 }));
 

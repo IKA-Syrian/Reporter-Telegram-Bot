@@ -99,12 +99,8 @@ export function ReportsComp({ reports }) {
 
     const filteredReports = sortedReports.filter(
         (report) =>
-            report.reportTitle
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            report.reportDescription
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase())
+            report.reportTitle.includes(searchTerm) ||
+            report.reportDescription.toLowerCase().includes(searchTerm)
     );
 
     const truncateText = (text, length) => {
@@ -165,9 +161,9 @@ export function ReportsComp({ reports }) {
                 </Button>
             </Box>
             <TableContainer component={Paper}>
-                <Table>
+                <Table className="reports-table">
                     <TableHead>
-                        <TableRow>
+                        <TableRow className="ReportHead">
                             <TableCell padding="checkbox">
                                 <Checkbox
                                     onChange={handleSelectAll}
@@ -236,81 +232,109 @@ export function ReportsComp({ reports }) {
                                 </TableCell>
                                 <TableCell>
                                     <pre style={{ textAlign: "right" }}>
-                                        {report.reportDescription
-                                            ? truncateText(
-                                                  report.reportDescription,
-                                                  35
-                                              )
-                                            : "لا يوجد وصف"}
+                                        {report.reportDescription ? (
+                                            truncateText(
+                                                report.reportDescription,
+                                                35
+                                            )
+                                        ) : (
+                                            <h2
+                                                style={{
+                                                    textAlign: "right",
+                                                }}
+                                            >
+                                                لا يوجد وصف
+                                            </h2>
+                                        )}
                                     </pre>
                                 </TableCell>
                                 <TableCell>
                                     <div className="attachments-container">
-                                        {report.reportAttachments
-                                            .slice(0, 5)
-                                            .map((attachment) => {
-                                                const filePath =
-                                                    "https://media.iaulibrary.com/" +
-                                                    attachment.filePath
-                                                        .split("/")
-                                                        .slice(4)
-                                                        .join("/");
-                                                if (
-                                                    attachment.mime_type.startsWith(
-                                                        "image"
-                                                    )
-                                                ) {
-                                                    return (
-                                                        <a
-                                                            key={
-                                                                attachment.file_unique_id
-                                                            }
-                                                            href={filePath}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            <img
-                                                                className="attachment-thumbnail"
-                                                                src={filePath}
-                                                                alt="attachment"
-                                                            />
-                                                        </a>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <a
-                                                            key={
-                                                                attachment.file_unique_id
-                                                            }
-                                                            href={filePath}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            <video
-                                                                width="50"
-                                                                height="50"
-                                                                controls
-                                                                className="attachment-thumbnail"
-                                                            >
-                                                                <source
-                                                                    src={
+                                        {report.reportAttachments &&
+                                        report.reportAttachments.length > 0 ? (
+                                            <>
+                                                {report.reportAttachments
+                                                    .slice(0, 5)
+                                                    .map((attachment) => {
+                                                        const filePath =
+                                                            "https://media.iaulibrary.com/" +
+                                                            attachment.filePath
+                                                                .split("/")
+                                                                .slice(4)
+                                                                .join("/");
+                                                        if (
+                                                            attachment.mime_type.startsWith(
+                                                                "image"
+                                                            )
+                                                        ) {
+                                                            return (
+                                                                <a
+                                                                    key={
+                                                                        attachment.file_unique_id
+                                                                    }
+                                                                    href={
                                                                         filePath
                                                                     }
-                                                                    type="video/mp4"
-                                                                />
-                                                            </video>
-                                                        </a>
-                                                    );
-                                                }
-                                            })}
-                                        {report.reportAttachments.length >
-                                            5 && (
-                                            <div className="more-images">
-                                                +
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    <img
+                                                                        className="attachment-thumbnail"
+                                                                        src={
+                                                                            filePath
+                                                                        }
+                                                                        alt="attachment"
+                                                                    />
+                                                                </a>
+                                                            );
+                                                        } else {
+                                                            return (
+                                                                <a
+                                                                    key={
+                                                                        attachment.file_unique_id
+                                                                    }
+                                                                    href={
+                                                                        filePath
+                                                                    }
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    <video
+                                                                        width="50"
+                                                                        height="50"
+                                                                        controls
+                                                                        className="attachment-thumbnail"
+                                                                    >
+                                                                        <source
+                                                                            src={
+                                                                                filePath
+                                                                            }
+                                                                            type="video/mp4"
+                                                                        />
+                                                                    </video>
+                                                                </a>
+                                                            );
+                                                        }
+                                                    })}
                                                 {report.reportAttachments
-                                                    .length - 5}{" "}
-                                                more
-                                            </div>
+                                                    .length > 5 && (
+                                                    <div className="more-images">
+                                                        +
+                                                        {report
+                                                            .reportAttachments
+                                                            .length - 5}{" "}
+                                                        more
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <h2
+                                                style={{
+                                                    textAlign: "center",
+                                                }}
+                                            >
+                                                لا يوجد مرفقات
+                                            </h2>
                                         )}
                                     </div>
                                 </TableCell>
@@ -343,7 +367,7 @@ export function ReportsComp({ reports }) {
                 display="flex"
                 justifyContent="center"
                 mt={2}
-                backgroundColor="#fff"
+                backgroundColor="var(--color-surface-200)"
                 p={1}
                 borderRadius={15}
                 maxWidth={300}

@@ -17,39 +17,43 @@ import {
     TableSortLabel,
     Pagination,
 } from "@mui/material";
-import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-import { deleteReporter } from "../../service/reporters";
+import {
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    Add as AddIcon,
+} from "@mui/icons-material";
+// import { get}
 
-export function ReportersComp({ reporters }) {
+export function UsersComp({ users }) {
     const navigate = useNavigate();
-    const [selectedReporters, setSelectedReporters] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortedReporters, setSortedReporters] = useState([...reporters]);
+    const [sortedUsers, setSortedUsers] = useState([...users]);
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 25;
 
     useEffect(() => {
-        setSortedReporters([...reporters]);
-    }, [reporters]);
+        setSortedUsers([...users]);
+    }, [users]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
 
-    const handleReporterEdit = (reporterId) => {
-        navigate(`/dashboard/reporters/${reporterId}/edit`);
+    const handleUserEdit = (userId) => {
+        navigate(`/dashboard/users/${userId}/edit`);
     };
 
-    const handleDelete = (reporterIds) => {
+    const handleDelete = (userIds) => {
         const ConfirmationMessage = window.confirm(
             `Are you sure you want to delete ${
-                reporterIds.length > 1 ? "these reporters" : "this reporter"
+                userIds.length > 1 ? "these users" : "this user"
             }?`
         );
         if (ConfirmationMessage) {
-            reporterIds.forEach((reporterId) => {
-                deleteReporter(reporterId)
+            userIds.forEach((userId) => {
+                deleteUser(userId)
                     .then((response) => {
                         console.log(response);
                         window.location.reload();
@@ -61,21 +65,19 @@ export function ReportersComp({ reporters }) {
         }
     };
 
-    const handleSelectReporter = (reporterId) => {
-        setSelectedReporters((prevSelected) =>
-            prevSelected.includes(reporterId)
-                ? prevSelected.filter((id) => id !== reporterId)
-                : [...prevSelected, reporterId]
+    const handleSelectUser = (userId) => {
+        setSelectedUsers((prevSelected) =>
+            prevSelected.includes(userId)
+                ? prevSelected.filter((id) => id !== userId)
+                : [...prevSelected, userId]
         );
     };
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
-            setSelectedReporters(
-                reporters.map((reporter) => reporter.TelegramId)
-            );
+            setSelectedUsers(users.map((user) => user._id));
         } else {
-            setSelectedReporters([]);
+            setSelectedUsers([]);
         }
     };
 
@@ -85,7 +87,7 @@ export function ReportersComp({ reporters }) {
             direction = "desc";
         }
         setSortConfig({ key, direction });
-        setSortedReporters((prevSorted) => {
+        setSortedUsers((prevSorted) => {
             return [...prevSorted].sort((a, b) => {
                 if (a[key] < b[key]) {
                     return direction === "asc" ? -1 : 1;
@@ -98,23 +100,20 @@ export function ReportersComp({ reporters }) {
         });
     };
 
-    const filteredReporters = sortedReporters.filter(
-        (reporter) =>
-            reporter.firstName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            reporter.lastName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            reporter.phoneNumber.toString().includes(searchTerm) ||
-            reporter.city.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleAdd = () => {
+        navigate("/dashboard/users/add");
+    };
+    const filteredUsers = sortedUsers.filter(
+        (user) =>
+            user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user._id.toString().includes(searchTerm)
     );
 
-    const paginatedReporters = filteredReporters.slice(
+    const paginatedUsers = filteredUsers.slice(
         (currentPage - 1) * recordsPerPage,
         currentPage * recordsPerPage
     );
-
     return (
         <Box sx={{ p: 3 }}>
             <Box
@@ -148,22 +147,36 @@ export function ReportersComp({ reporters }) {
                         },
                     }}
                 />
-                <Button
-                    variant="contained"
-                    sx={{
-                        backgroundColor: "#d50202",
-                        color: "white",
-                        "&:hover": { backgroundColor: "#ff4c4c" },
-                        "&:disabled": {
-                            backgroundColor: "#12304c",
+                <Box display="flex" justifyContent="space-between" mb={2}>
+                    <IconButton
+                        color="primary"
+                        onClick={() => handleAdd()}
+                        sx={{
+                            borderRadius: "50%",
+                            border: "2px solid",
+                            margin: "auto 10px",
+                        }}
+                    >
+                        <AddIcon />
+                    </IconButton>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#d50202",
                             color: "white",
-                        },
-                    }}
-                    onClick={() => handleDelete(selectedReporters)}
-                    disabled={selectedReporters.length === 0}
-                >
-                    حذف المحدد
-                </Button>
+                            height: "100%",
+                            "&:hover": { backgroundColor: "#ff4c4c" },
+                            "&:disabled": {
+                                backgroundColor: "#12304c",
+                                color: "white",
+                            },
+                        }}
+                        onClick={() => handleDelete(selectedUsers)}
+                        disabled={selectedUsers.length === 0}
+                    >
+                        حذف المحدد
+                    </Button>
+                </Box>
             </Box>
             <TableContainer component={Paper}>
                 <Table>
@@ -173,19 +186,15 @@ export function ReportersComp({ reporters }) {
                                 <Checkbox
                                     onChange={handleSelectAll}
                                     checked={
-                                        selectedReporters.length ===
-                                            reporters.length &&
-                                        selectedReporters.length > 0
+                                        selectedUsers.length === users.length &&
+                                        selectedUsers.length > 0
                                     }
                                 />
                             </TableCell>
                             {[
-                                { key: "TelegramId", label: "المعرف" },
-                                { key: "firstName", label: "الأسم الاول" },
-                                { key: "lastName", label: "الأسم الأخير" },
-                                { key: "phoneNumber", label: "رقم الهاتف" },
-                                { key: "city", label: "المدينة" },
-                                { key: "Verified", label: "الحالة" },
+                                { key: "_id", label: "المعرف" },
+                                { key: "username", label: "الأسم الاول" },
+                                { key: "email", label: "الأسم الأخير" },
                             ].map((column) => (
                                 <TableCell
                                     key={column.key}
@@ -209,56 +218,31 @@ export function ReportersComp({ reporters }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginatedReporters.map((reporter) => (
-                            <TableRow key={reporter.TelegramId}>
+                        {paginatedUsers.map((user) => (
+                            <TableRow key={user._id}>
                                 <TableCell padding="checkbox">
                                     <Checkbox
-                                        checked={selectedReporters.includes(
-                                            reporter.TelegramId
+                                        checked={selectedUsers.includes(
+                                            user._id
                                         )}
                                         onChange={() =>
-                                            handleSelectReporter(
-                                                reporter.TelegramId
-                                            )
+                                            handleSelectUser(user._id)
                                         }
                                     />
                                 </TableCell>
                                 <TableCell>
                                     <Link
-                                        to={`/dashboard/reporters/${reporter.TelegramId}/view`}
+                                        to={`/dashboard/users/${user._id}/view`}
                                     >
-                                        {reporter.TelegramId}
+                                        {user._id}
                                     </Link>
                                 </TableCell>
-                                <TableCell>{reporter.firstName}</TableCell>
-                                <TableCell>
-                                    {reporter.lastName.trim()}
-                                </TableCell>
-                                <TableCell>
-                                    <a href={"tel:" + reporter.phoneNumber}>
-                                        {reporter.phoneNumber}+
-                                    </a>
-                                </TableCell>
-                                <TableCell>{reporter.city}</TableCell>
-                                <TableCell>
-                                    <span
-                                        className={`pulsate ${
-                                            reporter.Verified
-                                                ? "verified"
-                                                : reporter.isBlocked
-                                                ? "blocked"
-                                                : "pending"
-                                        }`}
-                                    />
-                                </TableCell>
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.email}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         color="primary"
-                                        onClick={() =>
-                                            handleReporterEdit(
-                                                reporter.TelegramId
-                                            )
-                                        }
+                                        onClick={() => handleUserEdit(user._id)}
                                     >
                                         <EditIcon />
                                     </IconButton>
@@ -266,9 +250,7 @@ export function ReportersComp({ reporters }) {
                                 <TableCell>
                                     <IconButton
                                         color="secondary"
-                                        onClick={() =>
-                                            handleDelete([reporter.TelegramId])
-                                        }
+                                        onClick={() => handleDelete([user._id])}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
@@ -293,7 +275,7 @@ export function ReportersComp({ reporters }) {
                 }}
             >
                 <Pagination
-                    count={Math.ceil(filteredReporters.length / recordsPerPage)}
+                    count={Math.ceil(filteredUsers.length / recordsPerPage)}
                     page={currentPage}
                     onChange={handlePageChange}
                     color="primary"
@@ -303,7 +285,3 @@ export function ReportersComp({ reporters }) {
         </Box>
     );
 }
-
-ReportersComp.propTypes = {
-    reporters: PropTypes.array.isRequired,
-};

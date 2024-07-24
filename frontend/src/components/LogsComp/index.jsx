@@ -356,7 +356,7 @@ export function LogsComp({ logs }) {
                 display="flex"
                 justifyContent="center"
                 mt={2}
-                backgroundColor="#fff"
+                backgroundColor="var(--color-surface-200)"
                 p={1}
                 borderRadius={15}
                 maxWidth={300}

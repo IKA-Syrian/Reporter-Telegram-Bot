@@ -14,11 +14,15 @@ import {
     Box,
     CardActionArea,
     useTheme,
+    Paper,
+    Divider,
     IconButton,
 } from "@mui/material";
 import ReactPlayer from "react-player";
 import DownloadIcon from "@mui/icons-material/Download";
 import { saveAs } from "file-saver";
+import { getMetaData, getMedia } from "../../service/media";
+import { format, parseISO } from "date-fns";
 
 export function SingleReportComp({ report }) {
     const [selectedAttachment, setSelectedAttachment] = useState(null);
@@ -40,51 +44,85 @@ export function SingleReportComp({ report }) {
             }
         });
     };
-    const handleDownload = (attachment) => {
-        const link = `https://media.iaulibrary.com/${attachment.filePath
-            .split("/")
-            .slice(4)
-            .join("/")}`;
-        saveAs(link, attachment.filePath.split("/").pop());
-        // const link = document.createElement("a");
-
-        // link.download = selectedAttachment.filePath.split("/").pop();
-        // link.target = "_blank";
-        // link.rel = "noopener noreferrer";
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-    };
-    const handleDownloadAll = () => {
-        selectedAttachments.forEach((attachment) => {
-            fetch(
-                `https://media.iaulibrary.com/${attachment.filePath
-                    .split("/")
-                    .slice(4)
-                    .join("/")}`,
-                {
-                    method: "GET",
-                    headers: {},
-                }
-            )
-                .then((response) => {
-                    response.arrayBuffer().then(function (buffer) {
-                        const url = window.URL.createObjectURL(
-                            new Blob([buffer])
-                        );
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.setAttribute(
-                            "download",
-                            attachment.file_unique_id
-                        );
-                        document.body.appendChild(link);
-                        link.click();
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
+    const handleDownload = async (attachment, report) => {
+        try {
+            const fileData = await getMedia(
+                attachment.filePath,
+                report.reportID
+            );
+            if (!fileData.error) {
+                console.log("File data:", fileData);
+                const blob = new Blob([fileData], {
+                    type: attachment.mimeType,
                 });
+
+                const url = window.URL.createObjectURL(blob);
+        teconst link = document.createElement("a");
+                link.href = url;
+                const dateID = format(parseISO(report.reportDate), "yyyyMMdd");
+                link.setAttribute(
+                    "download",
+                    `${report.reportID}-${dateID}-${
+                        report.TelegramId
+                    }.${attachment.filePath.split("/").pop().split(".").pop()}`
+                );
+                // link.setAttribute(
+                //     "download",
+                //     `${attachment.file_unique_id}.${attachment.filePath
+                //         .split("/")
+                //         .pop()
+                //         .split(".")
+                //         .pop()}`
+                // );
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert("حدث خطأ أثناء تنزيل الملف");
+            }
+        } catch (error) {
+            console.error(
+                `Error downloading file ${attachment.filePath}:`,
+                error
+            );
+        }
+    };
+    const handleDownloadAll = (reportID) => {
+        selectedAttachments.forEach(async (attachment) => {
+            try {
+                const fileData = await getMedia(attachment.filePath, reportID);
+                if (!fileData.error) {
+                    const blob = new Blob([fileData], {
+                        type: attachment.mimeType,
+                    });
+
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute(
+                        "download",
+                        `${attachment.file_unique_id}.${attachment.filePath
+                            .split("/")
+                            .pop()
+                            .split(".")
+                            .pop()}`
+                    );
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("حدث خطأ أثناء تنزيل الملف");
+                }
+            } catch (error) {
+                console.error(
+                    `Error downloading file ${attachment.filePath}:`,
+                    error
+                );
+            }
         });
     };
 
@@ -101,32 +139,44 @@ export function SingleReportComp({ report }) {
             >
                 تفاصيل التقرير
             </Typography>
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
+            <Grid
+                container
+                spacing={2}
+                component={Paper}
+                sx={{
+                    justifyContent: "center",
+                    width: "100%",
+                    margin: "auto",
+                }}
+            >
+                <Grid item xs={12} md={6} p={4}>
                     <Box mb={2}>
                         <Typography variant="subtitle1" fontWeight="bold">
                             معرف التقرير:
                         </Typography>
-                        <Typography variant="body1" color="textSecondary">
+                        <Typography variant="body1" color="text.Secondary">
                             {report.reportID}
                         </Typography>
                     </Box>
+                    <Divider color="#fff"></Divider>
                     <Box mb={2}>
                         <Typography variant="subtitle1" fontWeight="bold">
                             تاريخ الإنشاء:
                         </Typography>
-                        <Typography variant="body1" color="textSecondary">
+                        <Typography variant="body1" color="text.Secondary">
                             {report.reportDate}
                         </Typography>
                     </Box>
+                    <Divider color="#fff"></Divider>
                     <Box mb={2}>
                         <Typography variant="subtitle1" fontWeight="bold">
                             العنوان:
                         </Typography>
-                        <Typography variant="h5" color="textPrimary">
-                            {report.title}
+                        <Typography variant="h5" color="text.Secondary">
+                            {report.reportTitle}
                         </Typography>
                     </Box>
+                    <Divider color="#fff"></Divider>
                     <Box mb={2}>
                         <Typography variant="subtitle1" fontWeight="bold">
                             التقرير:
@@ -139,14 +189,27 @@ export function SingleReportComp({ report }) {
                                 wordWrap: "break-word",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
-                                color: "textSecondary",
+                                color: "text.Secondary",
+                                textAlign: "left",
                             }}
                         >
                             {report.reportDescription}
                         </Typography>
                     </Box>
                 </Grid>
-                <Grid item xs={12} md={6}>
+
+                <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    p={4}
+                    sx={{
+                        borderLeft: {
+                            xs: "none",
+                            md: `1px solid #fff`,
+                        },
+                    }}
+                >
                     <Typography
                         variant="subtitle1"
                         fontWeight="bold"
@@ -208,7 +271,7 @@ export function SingleReportComp({ report }) {
                                         ) : (
                                             <Typography
                                                 variant="body2"
-                                                color="textSecondary"
+                                                color="text.Secondary"
                                             >
                                                 ملف غير مدعوم
                                             </Typography>
@@ -238,7 +301,7 @@ export function SingleReportComp({ report }) {
                             variant="contained"
                             color="primary"
                             disabled={selectedAttachments.length === 0}
-                            onClick={handleDownloadAll}
+                            onClick={() => handleDownloadAll(report.reportID)}
                             startIcon={<DownloadIcon />}
                         >
                             تنزيل الجميع
@@ -281,12 +344,12 @@ export function SingleReportComp({ report }) {
                             ) : (
                                 <Typography
                                     variant="body2"
-                                    color="textSecondary"
+                                    color="text.Secondary"
                                 >
                                     ملف غير مدعوم
                                 </Typography>
                             )}
-                            <Typography mt={2} color="textPrimary">
+                            <Typography mt={2} color="text.Secondary">
                                 اسم الملف: {selectedAttachment.fileName}
                             </Typography>
                         </>
@@ -297,7 +360,9 @@ export function SingleReportComp({ report }) {
                         إغلاق
                     </Button>
                     <Button
-                        onClick={() => handleDownload(selectedAttachment)}
+                        onClick={() =>
+                            handleDownload(selectedAttachment, report)
+                        }
                         color="primary"
                     >
                         تنزيل

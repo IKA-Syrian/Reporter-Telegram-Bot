@@ -18,7 +18,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     maxWidth: "400px",
     margin: "20px auto",
     padding: theme.spacing(3),
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
     borderRadius: theme.spacing(2),
     boxShadow: theme.shadows[3],
 }));
@@ -26,13 +26,13 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const TitleTypography = styled(Typography)(({ theme }) => ({
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
-    color: theme.palette.primary.main,
+    color: theme.palette.text.secondary,
     textAlign: "left",
 }));
 
 const DetailsTypography = styled(Typography)(({ theme }) => ({
     fontWeight: "bold",
-    color: theme.palette.text.secondary,
+    color: theme.palette.secondary.main,
     textAlign: "left",
     fontSize: "1.25rem",
 }));

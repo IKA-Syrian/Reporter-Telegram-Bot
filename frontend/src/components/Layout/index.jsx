@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtlPlugin from "stylis-plugin-rtl";
@@ -16,8 +17,11 @@ import { prefixer } from "stylis";
 import MenuComponent from "../MenuComponent";
 import { logout } from "../../service/users";
 import { useNavigate } from "react-router-dom";
-
 import Cookies from "js-cookie";
+
+const getCssVariable = (name) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name);
+
 // Create RTL cache
 const cacheRtl = createCache({
     key: "muirtl",
@@ -26,6 +30,24 @@ const cacheRtl = createCache({
 
 // Create a theme with RTL direction
 const theme = createTheme({
+    palette: {
+        primary: {
+            main: getCssVariable("--color-primary-500").trim(),
+            light: getCssVariable("--color-primary-200").trim(),
+            dark: getCssVariable("--color-primary-100").trim(),
+        },
+        secondary: {
+            main: getCssVariable("--color-secondary-600").trim(),
+        },
+        background: {
+            paper: getCssVariable("--color-surface-200").trim(),
+            default: getCssVariable("--color-surface-200").trim(),
+        },
+        text: {
+            primary: getCssVariable("--color-surface-700").trim(),
+            secondary: getCssVariable("--color-surface-400").trim(),
+        },
+    },
     direction: "rtl",
 });
 
