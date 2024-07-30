@@ -106,7 +106,7 @@ export function ReportersComp({ reporters }) {
             reporter.lastName
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase()) ||
-            reporter.phoneNumber.toString().includes(searchTerm) ||
+            reporter.phoneNumber.includes(searchTerm) ||
             reporter.city.toLowerCase().includes(searchTerm.toLowerCase())
     );
 

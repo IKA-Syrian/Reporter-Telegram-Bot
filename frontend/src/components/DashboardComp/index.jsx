@@ -36,6 +36,9 @@ export function DashboardComp({ reports, reporters }) {
                         <Typography variant="h5" gutterBottom>
                             أحدث التقارير
                         </Typography>
+                        <Typography variant="body2" gutterBottom>
+                            أحدث 5 تقارير تم تقديمها
+                        </Typography>
                         <LatestReports reports={reports} />
                     </Paper>
                 </Grid>

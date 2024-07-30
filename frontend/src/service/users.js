@@ -1,7 +1,7 @@
 import axios from "axios";
-
+import Cookies from "js-cookie";
 const API_URL = "https://balqees.iaulibrary.com";
-
+const token = Cookies.get("token");
 async function getUsers(token) {
     try {
         const response = await axios.get(`${API_URL}/api/users`, {
@@ -58,6 +58,9 @@ async function addUser(data) {
     try {
         const response = await axios.post(`${API_URL}/api/users`, data, {
             withCredentials: true,
+            headers: {
+                Authorization: token,
+            },
         });
         return response.data;
     } catch (error) {

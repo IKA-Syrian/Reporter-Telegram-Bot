@@ -15,8 +15,9 @@ import DOMPurify from "dompurify";
 export function AddUserForm() {
     const [formData, setFormData] = useState({
         username: "",
+        email: "",
         password: "",
-        role: "",
+        isAdmin: false,
     });
 
     const handleChange = (e) => {
@@ -60,7 +61,7 @@ export function AddUserForm() {
                         label="email"
                         variant="outlined"
                         name="email"
-                        value={formData.password}
+                        value={formData.email}
                         onChange={handleChange}
                         fullWidth
                     />
@@ -75,16 +76,16 @@ export function AddUserForm() {
                         fullWidth
                     />
                 </Box>
-                <Box mb={2}>
-                    <TextField
-                        label="Role"
-                        variant="outlined"
-                        name="role"
-                        value={formData.role}
-                        onChange={handleChange}
-                        fullWidth
+                <FormControlLabel
+                        control={
+                            <Checkbox
+                                name="isBlocked"
+                                checked={formData.isBlocked}
+                                onChange={handleChange}
+                            />
+                        }
+                        label={<Typography>is Admin</Typography>}
                     />
-                </Box>
                 <Box mb={2}>
                     <Button type="submit" variant="contained" color="primary">
                         Submit

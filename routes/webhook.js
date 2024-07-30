@@ -4,8 +4,7 @@ const Reporter = require('../schemas/reporter');
 const Report = require('../schemas/reports');
 const translate = require('google-translate-api-x');
 let dataCount = 1;
-// http://38.242.243.210:3030/bot7274402293:AAFuoX1x0wgUCmVxgo-I86jw2tP3sDyv97Y/getFile?file_id=BAACAgQAAxkBAAIBO2Z8JpFrphCYXbKGeooZInVOOQjrAAIrHwAC8kThU12VXwWLs4hENQQ
-// http://38.242.243.210:3030/file/bot7274402293:AAFuoX1x0wgUCmVxgo-I86jw2tP3sDyv97Y/videos/file_0.mp4
+
 let SampleData = [];
 
 router.post('/', async (req, res) => {
@@ -35,17 +34,38 @@ router.post('/', async (req, res) => {
                 });
                 return res.status(200).send('OK');
             }
+            if (text === '/start') {
+                const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك، هل توافق على مشاركة رقمك؟*`;
+                const Dbuttons = {
+                    one_time_keyboard: true,
+                    keyboard: [[{
+                        text: "أجل",
+                        request_contact: true
+                    }], ["لا"]]
+                };
+                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: welcomeText,
+                        parse_mode: 'MarkdownV2',
+                        reply_markup: Dbuttons
+                    })
+                });
+                return res.status(200).send('OK');
+            }
+            if (message.contact) {
+                const phoneNumber = message.contact.phone_number;
+                user.phoneNumber = phoneNumber;
+                await user.save();
 
-            if (text === '/verify') {
+                const verifyText = 'شكراً لك، يرجى إدخال المعلومات التالية للتحقق من هويتك.';
                 global.buttons = {
-                    keyboard: [
-                        { text: 'رقم الهاتف', callback_data: 'phoneNumber', request_contact: true },
-                    ],
                     inline_keyboard: [
                         [
                             { text: 'الأسم الأول', callback_data: 'firstName' },
                             { text: 'الأسم الأخير', callback_data: 'lastName' },
-
                         ],
                         [
                             { text: 'المدينة', callback_data: 'city' }
@@ -53,6 +73,18 @@ router.post('/', async (req, res) => {
                     ]
                 };
 
+                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: verifyText,
+                        reply_markup: global.buttons
+                    })
+                });
+                return res.status(200).send('OK');
+            }
+            if (text === '/verify') {
                 if (user.Verified) {
                     await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
@@ -63,7 +95,6 @@ router.post('/', async (req, res) => {
                         })
                     });
                     return res.status(200).send('OK');
-
                 } else if (user.Verified === false && user.firstName && user.lastName && user.phoneNumber && user.city) {
                     await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
@@ -94,12 +125,10 @@ router.post('/', async (req, res) => {
                         [
                             { text: 'عنوان التقرير', callback_data: 'reportTitle' },
                             { text: 'التقرير', callback_data: 'reportContent' },
-
                         ],
                         [
                             { text: 'عدد المرفقات', callback_data: 'reportNumberOfAttachments' },
                             { text: 'المرفقات', callback_data: 'reportAttachments' },
-
                         ],
                         [
                             { text: 'موقع الواقعة', callback_data: 'reportLocation' },
@@ -247,7 +276,7 @@ router.post('/', async (req, res) => {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 chat_id: chatId,
-                                text: `شكرا لك على ارسال ${await translate(field, { to: 'ar' }).then((res) => res.text)}.`
+                                text: `شكرا لك على ارسال ${await translate(field, { to: 'ar', forceBatch: false }).then((res) => res.text)}.`
                             })
                         });
                         return res.status(200).send('OK');
@@ -405,7 +434,7 @@ router.post('/', async (req, res) => {
                     }
                 }
             }
-            res.status(200).send('OK');
+            // res.status(200).send('OK');
         } catch (err) {
             console.error(err);
             return res.status(500).send(err);

@@ -71,7 +71,7 @@ async function updateReporter(id, data) {
 
 async function deleteReporter(id) {
     try {
-        const response = await axios.delete(`${API_URL}/api/reporters/${id}`, { username }, {
+        const response = await axios.delete(`${API_URL}/api/reporters/${id}`, {
             headers: {
                 Authorization: token,
             }

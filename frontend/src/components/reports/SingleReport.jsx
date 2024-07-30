@@ -57,7 +57,7 @@ export function SingleReportComp({ report }) {
                 });
 
                 const url = window.URL.createObjectURL(blob);
-        teconst link = document.createElement("a");
+                const link = document.createElement("a");
                 link.href = url;
                 const dateID = format(parseISO(report.reportDate), "yyyyMMdd");
                 link.setAttribute(
