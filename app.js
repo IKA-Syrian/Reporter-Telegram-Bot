@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
-const { TOKEN, COOKIEEXP, PORT, WEBHOOK_URL, MONGO_URL } = process.env;
+const { TOKEN, COOKIEEXP, PORT, WEBHOOK_URL, MONGO_URL, TELEGRAM_URL } = process.env;
 const routes = require('./routes');
 const app = express();
 const helmet = require('helmet');
@@ -69,7 +69,7 @@ app.listen(PORT, () => {
 });
 
 (async () => {
-    const url = `http://38.242.243.210:3030/bot${TOKEN}/setWebhook?url=${WEBHOOK_URL}`;
+    const url = `${TELEGRAM_URL}/bot${TOKEN}/setWebhook?url=${WEBHOOK_URL}`;
     const req = await fetch(url, {
         method: 'POST'
     });

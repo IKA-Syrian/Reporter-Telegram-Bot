@@ -4,7 +4,7 @@ const Reporter = require('../schemas/reporter');
 const Report = require('../schemas/reports');
 const translate = require('google-translate-api-x');
 let dataCount = 1;
-
+const { TELEGRAM_URL } = process.env;
 let SampleData = [];
 
 router.post('/', async (req, res) => {
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
                 await user.save();
             }
             if (user.isBlocked) {
-                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
                         request_contact: true
                     }], ["لا"]]
                 };
-                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
                     ]
                 };
 
-                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -86,7 +86,7 @@ router.post('/', async (req, res) => {
             }
             if (text === '/verify') {
                 if (user.Verified) {
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -96,7 +96,7 @@ router.post('/', async (req, res) => {
                     });
                     return res.status(200).send('OK');
                 } else if (user.Verified === false && user.firstName && user.lastName && user.phoneNumber && user.city) {
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -107,7 +107,7 @@ router.post('/', async (req, res) => {
                     return res.status(200).send('OK');
                 } else {
                     const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك، هل توافق على مشاركة رقمك؟*`;
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -137,7 +137,7 @@ router.post('/', async (req, res) => {
                     ]
                 }
                 if (user.Verified && user.Verified === true) {
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -149,7 +149,7 @@ router.post('/', async (req, res) => {
                     });
                     return res.status(200).send('OK');
                 } else {
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -185,7 +185,7 @@ router.post('/', async (req, res) => {
                         { new: true }
                     );
 
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -199,7 +199,7 @@ router.post('/', async (req, res) => {
                     delete currentData.awaitingField;
                     if (updatedUser.firstName && updatedUser.lastName && updatedUser.phoneNumber && updatedUser.city && updatedUser.Verified == false) {
 
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -214,7 +214,7 @@ router.post('/', async (req, res) => {
 رقم الهاتف: +${updatedUser.phoneNumber}
 المدينة: ${updatedUser.city}
                         `;
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -235,7 +235,7 @@ router.post('/', async (req, res) => {
                         SampleData = [...SampleData.filter(chat => chat.chatId !== message.from.id)]
                         return res.status(200).send('OK');
                     } else {
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -261,7 +261,7 @@ router.post('/', async (req, res) => {
                         };
 
                         delete currentData.awaitingField;
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -271,7 +271,7 @@ router.post('/', async (req, res) => {
                             })
                         });
 
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -282,7 +282,7 @@ router.post('/', async (req, res) => {
                         return res.status(200).send('OK');
                     } else if (field === "reportAttachments") {
                         console.log(message.photo);
-                        const FileData = await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/getFile?file_id=${fileData.file_id}`).then(res => res.json());
+                        const FileData = await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/getFile?file_id=${fileData.file_id}`).then(res => res.json());
                         const filePath = FileData.result.file_path;
                         console.log(SampleData.filter(chat => chat.chatId === message.from.id && chat.awaitingField === "reportAttachments").length)
                         if (SampleData.filter(chat => chat.chatId === message.from.id && chat.awaitingField === "reportAttachments").length > 1) {
@@ -300,7 +300,7 @@ router.post('/', async (req, res) => {
                             };
 
 
-                            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+                            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -310,7 +310,7 @@ router.post('/', async (req, res) => {
                                 })
                             });
 
-                            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -348,7 +348,7 @@ router.post('/', async (req, res) => {
                     const updatedReport = await Report.findOneAndUpdate({ TelegramId: message.from.id, reportID: currentData['mainMessageID'] }, { [currentData.ColumnName]: currentData[field] }, { new: true });
 
                     delete currentData.awaitingField;
-                    await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -365,7 +365,7 @@ router.post('/', async (req, res) => {
 عدد المرفقات: ${updatedReport.reportNumberOfAttachments}
 موقع الواقعة: ${updatedReport.reportLocation}
                         `;
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -382,7 +382,7 @@ router.post('/', async (req, res) => {
                                 },
                             })
                         });
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -393,7 +393,7 @@ router.post('/', async (req, res) => {
                         SampleData = [...SampleData.filter(chat => chat.chatId !== message.from.id)]
                         res.status(200).send('OK');
                     } else {
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -412,7 +412,7 @@ router.post('/', async (req, res) => {
                         user.isBlocked = true;
                         await user.save();
 
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -422,7 +422,7 @@ router.post('/', async (req, res) => {
                         });
                         return res.status(200).send('OK');
                     } else {
-                        await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+                        await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -458,7 +458,7 @@ router.post('/', async (req, res) => {
             SampleData.push({ chatId, awaitingField: 'city', mainMessageID: callbackQuery.message.message_id, Data: "verification" });
         } else if (callbackData === 'confirm_yes') {
             promptMessage = 'شكراً لك على تقديم معلوماتك، سيتم التحقق منها والتواصل معك في أقرب وقت ممكن، أو يمكنك التواصل مع الشخص المسؤول عن ذلك.';
-            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -469,7 +469,7 @@ router.post('/', async (req, res) => {
             });
         } else if (callbackData === 'confirm_no') {
             await Reporter.findOneAndDelete({ TelegramId: chatId });
-            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -505,7 +505,7 @@ router.post('/', async (req, res) => {
         } else if (callbackData === 'report_Confirm_yes') {
             try {
                 promptMessage = 'شكراً لك على تقديم التقرير، سيتم التحقق منه والتواصل معك في أقرب وقت ممكن.';
-                await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+                await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -521,7 +521,7 @@ router.post('/', async (req, res) => {
         } else if (callbackData === `report_Confirm_no_${callbackData.split('_')[3]}`) {
             await Report.findOneAndDelete({ TelegramId: chatId, reportID: callbackData.split('_')[3] });
             promptMessage = 'يرجى إعادة إدخال التقرير من جديد.';
-            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
+            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/editMessageReplyMarkup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -533,7 +533,7 @@ router.post('/', async (req, res) => {
             });
         }
         try {
-            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/sendMessage`, {
+            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -543,7 +543,7 @@ router.post('/', async (req, res) => {
             });
 
             // Answer callback query to remove loading state
-            await fetch(`http://38.242.243.210:3030/bot${process.env.TOKEN}/answerCallbackQuery`, {
+            await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/answerCallbackQuery`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
