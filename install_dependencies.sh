@@ -29,3 +29,5 @@ mkdir build
 cd build
 cmake ..
 cmake --build . --target install
+
+node app

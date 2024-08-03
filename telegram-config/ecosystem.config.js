@@ -3,7 +3,7 @@ module.exports = {
         {
             name: 'telegram-bot-api',
             script: '/usr/local/bin/telegram-bot-api', // Full path to the Telegram Bot API executable
-            args: '--local --api-id=9715211 --api-hash=d7f31e5ba0ec7be4cb0c42278d61dd9f --http-port 3030',
+            args: 'telegram-bot-api --local --api-id=9715211 --api-hash=d7f31e5ba0ec7be4cb0c42278d61dd9f --http-port 3030',
             instances: 1,
             autorestart: true,
             watch: false,

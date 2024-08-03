@@ -1,3 +1,4 @@
+require('dotenv').config();
 const router = require('express').Router();
 const fetch = require('node-fetch');
 const Reporter = require('../schemas/reporter');
@@ -35,27 +36,49 @@ router.post('/', async (req, res) => {
                 return res.status(200).send('OK');
             }
             if (text === '/start') {
-                const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك، هل توافق على مشاركة رقمك؟*`;
-                const Dbuttons = {
-                    one_time_keyboard: true,
-                    keyboard: [[{
-                        text: "أجل",
-                        request_contact: true
-                    }], ["لا"]]
-                };
-                await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: welcomeText,
-                        parse_mode: 'MarkdownV2',
-                        reply_markup: Dbuttons
-                    })
-                });
-                return res.status(200).send('OK');
+                if (user.Verified) {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: 'انت مفعل بالفعل.'
+                        })
+                    });
+                    return res.status(200).send('OK');
+                } else if (user.Verified === false && user.firstName && user.lastName && user.phoneNumber && user.city) {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: 'شكراً لك على تقديم معلوماتك، سيتم التحقق منها والتواصل معك في أقرب وقت ممكن، أو يمكنك التواصل مع الشخص المسؤول عن ذلك.'
+                        })
+                    });
+                    return res.status(200).send('OK');
+                } else {
+                    const welcomeText = `*أهلا بك في BalqeesMedia للتحقق من الهوية الخاصة بك، هل توافق على مشاركة رقمك؟*`;
+                    const Dbuttons = {
+                        one_time_keyboard: true,
+                        keyboard: [[{
+                            text: "أجل",
+                            request_contact: true
+                        }], ["لا"]]
+                    };
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: welcomeText,
+                            parse_mode: 'MarkdownV2',
+                            reply_markup: Dbuttons
+                        })
+                    });
+                    return res.status(200).send('OK');
+                }
             }
-            if (message.contact) {
+            if (message.contact && user.isBlocked === false) {
                 const phoneNumber = message.contact.phone_number;
                 user.phoneNumber = phoneNumber;
                 await user.save();

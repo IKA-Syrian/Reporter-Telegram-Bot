@@ -19,4 +19,39 @@ MONGODB_URL=MONGODB_URI
 
 4. Run `cd frontend && npm install` for frontend dependencies
 5. Run `npm run dev` to start the server
-6.
+6. use admin
+
+db.createUser({
+user: "Balqees",
+pwd: "password",
+roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase"]
+})
+
+exit
+
+mongosh -u Balqees -p password --authenticationDatabase admin
+
+use Balqees
+
+exit
+
+nano /etc/mongod.conf
+
+net:
+port: 5217
+bindIp: 127.0.0.1, server-ip
+
+sudo systemctl restart mongod
+
+cd Reporter-Telegram-Bot
+
+cp telegram-config/eco-system.config.js telegram-bot-api/
+
+pm2 start telegram-bot-api/ecosystem.config.js
+pm2 startup
+pm2 save
+
+```
+
+.env
+```
