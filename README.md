@@ -20,6 +20,8 @@ MONGODB_URL=MONGODB_URI
 4. Run `cd frontend && npm install` for frontend dependencies
 5. Run `npm run dev` to start the server
 6. use admin
+   cd frontend && npm install
+   cd .. && npm run build:frontend
 
 db.createUser({
 user: "Balqees",
