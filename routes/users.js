@@ -30,9 +30,9 @@ router.get("/:username", authMiddleware, async (req, res) => {
 
 router.post("/", authMiddleware, async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, isAdmin } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, email, password: hashedPassword });
+        const user = new User({ username, email, password: hashedPassword, isAdmin: isAdmin || false });
         await user.save();
         res.status(201).json({
             message: "User created successfully",

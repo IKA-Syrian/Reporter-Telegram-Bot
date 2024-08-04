@@ -57,3 +57,12 @@ pm2 save
 
 .env
 ```
+
+db.empDetails.insertOne(
+{
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Date_Of_Birth: "1995-09-26",
+e_mail: "radhika_sharma.123@gmail.com",
+phone: "9848022338"
+})
