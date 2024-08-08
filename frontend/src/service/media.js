@@ -2,10 +2,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = Cookies.get('token');
+const getToken = () => Cookies.get("token");
 const username = localStorage.getItem('username');
 
 async function getMetaData(filePath, mimeType) {
+    const token = getToken();
     try {
         const response = await axios.post(`${API_URL}/api/media/info`, {
             filePath, mimeType
@@ -21,6 +22,7 @@ async function getMetaData(filePath, mimeType) {
 }
 
 async function uploadMedia(data) {
+    const token = getToken();
     try {
         const response = await axios.post(`${API_URL}/api/media`, data, {
             headers: {
@@ -34,7 +36,7 @@ async function uploadMedia(data) {
 }
 
 async function getMedia(filePath, reportID) {
-    console.log(token)
+    const token = getToken();
     try {
         const response = await axios.post(`${API_URL}/api/media/download`, {
             filePath, reportID, username

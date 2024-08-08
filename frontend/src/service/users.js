@@ -1,8 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 const API_URL = import.meta.env.VITE_API_URL;
-const token = Cookies.get("token");
-async function getUsers(token) {
+const getToken = () => Cookies.get("token");
+const username = localStorage.getItem("username");
+
+async function getUsers() {
+    const token = getToken();
     try {
         const response = await axios.get(`${API_URL}/api/users`, {
             withCredentials: true,
@@ -16,12 +19,13 @@ async function getUsers(token) {
     }
 }
 
-async function getUser(username, passedToken) {
+async function getUser(username) {
+    const token = getToken();
     try {
         const response = await axios.get(`${API_URL}/api/users/${username}`, {
             withCredentials: true,
             headers: {
-                Authorization: passedToken,
+                Authorization: token,
             },
         });
         return response.data;
@@ -55,6 +59,7 @@ async function logout(token) {
 }
 
 async function addUser(data) {
+    const token = getToken();
     try {
         const response = await axios.post(`${API_URL}/api/users`, data, {
             withCredentials: true,
@@ -68,7 +73,8 @@ async function addUser(data) {
     }
 }
 
-async function updateUser(id, data, token) {
+async function updateUser(id, data) {
+    const token = getToken();
     try {
         const response = await axios.put(`${API_URL}/api/users/${id}`, data, {
             withCredentials: true,
@@ -81,10 +87,10 @@ async function updateUser(id, data, token) {
         return error.response.data;
     }
 }
-async function deleteUser(id, token) {
+async function deleteUser(id) {
+    const token = getToken();
     try {
-        const response = await axios.delete(`${API_URL}/api/users/${id}`, {
-            withCredentials: true,
+        const response = await axios.delete(`${API_URL}/api/users/${id}?username=${username}`, {
             headers: {
                 Authorization: token,
             },

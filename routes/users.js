@@ -2,7 +2,8 @@ const router = require("express").Router();
 const authMiddleware = require('../handler/authMiddleware');
 const bcrypt = require("bcrypt");
 const User = require("../schemas/users");
-
+const Logs = require('../schemas/log');
+const Dump = require('../schemas/dump');
 router.get("/", authMiddleware, async (req, res) => {
 
     try {
@@ -63,7 +64,28 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
-        await User.findByIdAndDelete(req.params.id);
+        const user = await User.findOne({ username: req.query.username });
+        if (!user) {
+            res.status(400).json({
+                message: "User not found",
+            });
+            return;
+        }
+        const prvData = await User.findOne({ _id: req.params.id });
+        const newData = await User.findOneAndDelete({ _id: req.params.id });
+
+        const log = new Logs({
+            userID: user['_id'], ActionType: 'DELETE USER', logData: {
+                from: prvData,
+                to: null,
+            }
+        });
+        await log.save();
+        const dump = new Dump({
+            CollectionName: "Users",
+            DumpedData: prvData
+        })
+        await dump.save();
         res.status(200).json({
             message: "User deleted successfully",
         });

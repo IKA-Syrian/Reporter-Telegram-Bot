@@ -7,7 +7,7 @@ const logsSchema = new mongoose.Schema({
     },
     ActionType: {
         type: String,
-        enum: ['INSERT', 'UPDATE REPORT', 'UPDATE REPORTER', "DELETE REPORT", 'DELETE REPORTER', "DOWNLOAD MEDIA"],
+        enum: ['INSERT', 'UPDATE REPORT', 'UPDATE REPORTER', "DELETE REPORT", 'DELETE REPORTER', "DOWNLOAD MEDIA", "DELETE MEDIA", "UPDATE MEDIA", "DELETE USER", "UPDATE USER", "INSERT USER"],
         required: false
     },
     logData: {

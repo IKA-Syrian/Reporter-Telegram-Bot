@@ -2,11 +2,11 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const token = Cookies.get("token");
+const getToken = () => Cookies.get("token");
 const username = localStorage.getItem("username");
 
 async function getReporters(count, passedToken) {
-
+    const token = passedToken || getToken();
     if (count) {
         try {
             const response = await axios.get(`${API_URL}/api/reporters?count=${count}`, {
@@ -32,6 +32,7 @@ async function getReporters(count, passedToken) {
     }
 }
 async function getReporter(id) {
+    const token = getToken();
     try {
         const response = await axios.get(`${API_URL}/api/reporters/${id}`, {
             headers: {
@@ -44,6 +45,7 @@ async function getReporter(id) {
     }
 }
 async function createReporter(data) {
+    const token = getToken();
     try {
         const response = await axios.post(`${API_URL}/api/reporters`, data, {
             headers: {
@@ -57,6 +59,7 @@ async function createReporter(data) {
 }
 
 async function updateReporter(id, data) {
+    const token = getToken();
     try {
         const response = await axios.put(`${API_URL}/api/reporters/${id}`, { data, username }, {
             headers: {
@@ -70,6 +73,7 @@ async function updateReporter(id, data) {
 }
 
 async function deleteReporter(id) {
+    const token = getToken();
     try {
         const response = await axios.delete(`${API_URL}/api/reporters/${id}`, {
             headers: {

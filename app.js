@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
-const { TOKEN, COOKIEEXP, PORT, WEBHOOK_URL, MONGO_URL, TELEGRAM_URL } = process.env;
+const { TOKEN, COOKIEEXP, PORT, WEBHOOK_URL, MONGO_URL, TELEGRAM_URL, DASHBOARD_URL } = process.env;
 const routes = require('./routes');
 const app = express();
 const helmet = require('helmet');
@@ -15,7 +15,7 @@ app.disable('x-powered-by');
 
 // const MongoStore = require('connect-mongo');
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://192.168.1.38:5173', 'http://38.242.243.210:5173', 'https://dashboard.iaulibrary.com'],  // Use the correct origin without a trailing slash
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5001', DASHBOARD_URL],  // Use the correct origin without a trailing slash
     credentials: true
 }));
 
@@ -37,10 +37,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 const cspDirectives = {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "https://trusted.cdn.com"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
     styleSrc: ["'self'", "'unsafe-inline'", "https://trusted.cdn.com"],
-    imgSrc: ["'self'", "data:", "https://trusted.cdn.com"],
-    connectSrc: ["'self'", "https://api.trusted.com"],
+    imgSrc: ["'self'", "data:", "https://cdn.cloudflare.com"],
     fontSrc: ["'self'", "https://fonts.gstatic.com"],
     objectSrc: ["'none'"],
     frameAncestors: ["'none'"],
@@ -57,11 +56,6 @@ app.use(helmet.permittedCrossDomainPolicies({ permittedPolicies: 'none' })); // 
 app.use(helmet.referrerPolicy({ policy: 'no-referrer' })); // Referrer Policy
 app.use(helmet.xssFilter()); // X-XSS-Protection
 
-app.use(helmet.hsts({
-    maxAge: 31536000, // 1 year in seconds
-    includeSubDomains: true,
-    preload: true
-}));
 app.use('/api', routes)
 
 app.listen(PORT, () => {

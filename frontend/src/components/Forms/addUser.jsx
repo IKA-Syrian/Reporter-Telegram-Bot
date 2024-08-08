@@ -77,15 +77,15 @@ export function AddUserForm() {
                     />
                 </Box>
                 <FormControlLabel
-                        control={
-                            <Checkbox
-                                name="isBlocked"
-                                checked={formData.isBlocked}
-                                onChange={handleChange}
-                            />
-                        }
-                        label={<Typography>is Admin</Typography>}
-                    />
+                    control={
+                        <Checkbox
+                            name="isAdmin"
+                            checked={formData.isAdmin}
+                            onChange={handleChange}
+                        />
+                    }
+                    label={<Typography>is Admin</Typography>}
+                />
                 <Box mb={2}>
                     <Button type="submit" variant="contained" color="primary">
                         Submit

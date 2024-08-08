@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
 import {
     Box,
     Accordion,
@@ -67,8 +69,8 @@ export function LogsComp({ logs }) {
     };
 
     const renderLogData = (logData) => {
-        const fromData = logData.from;
-        const toData = logData.to;
+        const fromData = logData.from || {};
+        const toData = logData.to || {};
 
         const renderTableRow = (key, fromValue, toValue, isChanged) => (
             <TableRow key={key}>
@@ -89,7 +91,7 @@ export function LogsComp({ logs }) {
                         color: isChanged ? "white" : "inherit",
                     }}
                 >
-                    {JSON.stringify(toValue)}
+                    {toValue === null ? "null" : JSON.stringify(toValue)}
                 </TableCell>
             </TableRow>
         );
@@ -192,7 +194,11 @@ export function LogsComp({ logs }) {
 
             if (Array.isArray(fromValue) || Array.isArray(toValue)) {
                 // Handle array differences
-                return handleArrayDifferences(key, fromValue, toValue);
+                return handleArrayDifferences(
+                    key,
+                    fromValue || [],
+                    toValue || []
+                );
             }
 
             if (typeof fromValue === "object" && fromValue !== null) {
@@ -205,7 +211,7 @@ export function LogsComp({ logs }) {
                             </Typography>
                             {renderLogData({
                                 from: fromValue,
-                                to: toValue,
+                                to: toValue || {},
                             })}
                         </TableCell>
                     </TableRow>
@@ -249,7 +255,6 @@ export function LogsComp({ logs }) {
                                 { key: "logDate", label: "Updated At" },
                                 { key: "ActionType", label: "Action" },
                                 { key: "username", label: "username" },
-                                // { key: "reportDescription", label: "التقرير" },
                             ].map((column) => (
                                 <TableCell
                                     key={column.key}
@@ -360,7 +365,6 @@ export function LogsComp({ logs }) {
                 p={1}
                 borderRadius={15}
                 maxWidth={300}
-                // margin="auto"
                 sx={{
                     "& .MuiPagination-ul": { justifyContent: "center" },
                     marginTop: "20px",
@@ -378,3 +382,7 @@ export function LogsComp({ logs }) {
         </Box>
     );
 }
+
+LogsComp.propTypes = {
+    logs: PropTypes.array.isRequired,
+};

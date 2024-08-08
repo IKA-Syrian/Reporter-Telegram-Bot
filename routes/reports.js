@@ -76,7 +76,26 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
-        await Reports.findOneAndDelete({ reportID: req.params.id });
+        const user = await User.findOne({ username: req.query.username });
+        if (!user) {
+            res.status(400).json({
+                message: "User not found",
+            });
+            return;
+        }
+        const prvData = await Reports.findOneAndDelete({ reportID: req.params.id });
+        const log = new Logs({
+            userID: user['_id'], ActionType: 'DELETE REPORT', logData: {
+                from: prvData,
+                to: null,
+            }
+        });
+        await log.save();
+        const dump = new Dump({
+            CollectionName: "Reports",
+            DumpedData: prvData
+        });
+        await dump.save();
         res.status(200).json({
             message: 'Report deleted successfully',
         });

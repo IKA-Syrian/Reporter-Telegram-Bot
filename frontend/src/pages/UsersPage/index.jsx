@@ -17,8 +17,7 @@ export function Users() {
 
     const fetchData = async () => {
         try {
-            const token = Cookies.get("token");
-            getUsers(token).then((data) => {
+            getUsers().then((data) => {
                 setLoading(false);
 
                 setUsers(data);

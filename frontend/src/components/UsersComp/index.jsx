@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { deleteUser } from "../../service/users";
 import {
     Table,
     TableHead,
@@ -285,3 +286,7 @@ export function UsersComp({ users }) {
         </Box>
     );
 }
+
+UsersComp.propTypes = {
+    users: PropTypes.array.isRequired,
+};

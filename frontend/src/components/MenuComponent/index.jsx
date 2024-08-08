@@ -53,9 +53,8 @@ export default function MenuComponent({ open, onClose }) {
     const [isAdmin, setIsAdmin] = React.useState(false);
     React.useEffect(() => {
         const user = localStorage.getItem("username");
-        const token = Cookies.get("token");
-        getUser(user, token).then((response) => {
-            console.log(response);
+        getUser(user).then((response) => {
+            // console.log(response);
             if (response.isAdmin === true) {
                 setIsAdmin(true);
             }

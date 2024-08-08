@@ -3,10 +3,11 @@ import Cookies from "js-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = Cookies.get("token");
+const getToken = () => Cookies.get("token");
 const username = localStorage.getItem("username");
 
 async function getLogs() {
+    const token = getToken();
     try {
         const response = await axios.get(`${API_URL}/api/logs`, {
             headers: {
@@ -20,6 +21,7 @@ async function getLogs() {
 }
 
 async function getLog(id) {
+    const token = getToken();
     try {
         const response = await axios.get(`${API_URL}/api/logs/${id}`, {
             headers: {
