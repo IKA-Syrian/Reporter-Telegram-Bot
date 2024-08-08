@@ -8,7 +8,7 @@ const Reports = require('../schemas/reports');
 const User = require('../schemas/users');
 const Logs = require('../schemas/log');
 const authMiddleware = require('../handler/authMiddleware');
-db.users.findOne({ username: 'mohi' })
+
 async function getMediaInfo(filePath) {
     const mediaInfo = await mediaInfoFactory({ format: 'object' });
     const fileSize = fs.statSync(filePath).size;
