@@ -7,14 +7,13 @@ const Dump = require('../schemas/dump');
 router.get("/", authMiddleware, async (req, res) => {
 
     try {
-        const users = await User.find();
+        const users = await User.find().select('-password');;
         res.status(200).json(users);
     } catch (err) {
         console.log(err);
         res.status(400).json(err);
     }
-}
-);
+});
 
 router.get("/:username", authMiddleware, async (req, res) => {
     try {

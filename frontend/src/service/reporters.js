@@ -31,6 +31,19 @@ async function getReporters(count, passedToken) {
         }
     }
 }
+async function getReportersChart(peroid) {
+    const token = getToken();
+    try {
+        const response = await axios.get(`${API_URL}/api/reporters/chart?peroid=${peroid}`, {
+            headers: {
+                Authorization: token,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
 async function getReporter(id) {
     const token = getToken();
     try {
@@ -85,4 +98,4 @@ async function deleteReporter(id) {
         return error.response.data;
     }
 }
-export { getReporters, getReporter, createReporter, updateReporter, deleteReporter };
+export { getReporters, getReportersChart, getReporter, createReporter, updateReporter, deleteReporter };

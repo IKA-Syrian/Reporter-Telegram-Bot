@@ -29,6 +29,19 @@ async function getReports(count, passedToken) {
         }
     }
 }
+async function getReportsChart(peroid) {
+    const token = getToken();
+    try {
+        const response = await axios.get(`${API_URL}/api/reports/chart?peroid=${peroid}`, {
+            headers: {
+                Authorization: token,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
 async function getReport(id) {
     const token = getToken();
     try {
@@ -83,4 +96,4 @@ async function deleteReport(id) {
         return error.response.data;
     }
 }
-export { getReports, getReport, createReport, updateReport, deleteReport };
+export { getReports, getReportsChart, getReport, createReport, updateReport, deleteReport };

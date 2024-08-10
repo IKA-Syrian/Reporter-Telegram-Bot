@@ -6,7 +6,7 @@ export default function TotalCounters({ reports, reporters }) {
         <Box sx={{ display: "flex", justifyContent: "space-around", mb: 3 }}>
             <Paper sx={{ p: 2, textAlign: "center", width: "30%" }}>
                 <Typography variant="h6">إجمالي التقارير</Typography>
-                <Typography variant="h4">{reports.length}</Typography>
+                <Typography variant="h4">{reports}</Typography>
             </Paper>
             <Paper sx={{ p: 2, textAlign: "center", width: "30%" }}>
                 <Typography variant="h6">إجمالي المراسلين</Typography>

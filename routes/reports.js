@@ -9,8 +9,12 @@ router.get('/', authMiddleware, async (req, res) => {
     try {
         const { count } = req.query;
         if (count) {
+            const total = await Reports.countDocuments();
             const reports = await Reports.find().limit(parseInt(count)).sort({ reportDate: -1 });
-            res.status(200).json(reports);
+            res.status(200).json({
+                total,
+                reports
+            });
         } else {
             const reports = await Reports.find().sort({ reportDate: -1 });
             res.status(200).json(reports);
@@ -20,7 +24,50 @@ router.get('/', authMiddleware, async (req, res) => {
         res.status(400).json(err);
     }
 });
-
+router.get('/search', authMiddleware, async (req, res) => {
+    try {
+        const { search } = req.query;
+        const reports = await Reports.find({ $text: { $search: search } });
+        res.status(200).json(reports);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
+router.get('/chart', authMiddleware, async (req, res) => {
+    const { peroid } = req.query;
+    const date = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+    switch (peroid) {
+        case "1":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            break;
+        case "7":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 7);
+            break;
+        case "14":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 14);
+            break;
+        case "30":
+            startDate = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate());
+            break;
+        case "60":
+            startDate = new Date(date.getFullYear(), date.getMonth() - 2, date.getDate());
+            break;
+        default:
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            break
+    }
+    const reports = await Reports.find({ reportDate: { $gte: startDate, $lt: endDate } });
+    const chartData = reports.map(report => {
+        return {
+            reportDate: report.reportDate,
+        }
+    });
+    // console.log(chartData);
+    res.status(200).json(chartData);
+})
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
         const report = await Reports.findOne({ reportID: req.params.id });

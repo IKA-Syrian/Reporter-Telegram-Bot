@@ -6,10 +6,13 @@ import ReportsChart from "./ReportsChart";
 import { Box, Paper, Typography, Grid } from "@mui/material";
 
 export function DashboardComp({ reports, reporters }) {
+    // console.log(reports.reports);
+    const reportData = reports.reports;
+    const reportTotal = reports.total;
     return (
         <Box sx={{ p: 3 }} dir="rtl">
-            <TotalCounters reports={reports} reporters={reporters} />
-            <ReportsChart reports={reports} reporters={reporters} />
+            <TotalCounters reports={reportTotal} reporters={reporters} />
+            <ReportsChart reports={reportData} reporters={reporters} />
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                     <Paper
@@ -39,7 +42,7 @@ export function DashboardComp({ reports, reporters }) {
                         <Typography variant="body2" gutterBottom>
                             أحدث 5 تقارير تم تقديمها
                         </Typography>
-                        <LatestReports reports={reports} />
+                        <LatestReports reports={reportData} />
                     </Paper>
                 </Grid>
             </Grid>

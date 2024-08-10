@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     LineChart,
     Line,
@@ -23,7 +23,8 @@ import {
     startOfDay,
     addHours,
 } from "date-fns";
-
+import { getReportsChart } from "../../service/reports";
+import { getReportersChart } from "../../service/reporters";
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         const date = format(parseISO(label), "yyyy-MM-dd");
@@ -54,9 +55,26 @@ const CustomTooltip = ({ active, payload, label }) => {
     return null;
 };
 
-export default function ReportsChart({ reports, reporters }) {
+export default function ReportsChart() {
+    const [reports, setReports] = useState([]);
+    const [reporters, setReporters] = useState([]);
     const [dateRange, setDateRange] = useState("7");
-
+    useEffect(() => {
+        getReportsChart().then((data) => {
+            setReports(data);
+        });
+        getReportersChart().then((data) => {
+            setReporters(data);
+        });
+    }, []);
+    function updateData(peroid) {
+        getReportsChart(peroid).then((data) => {
+            setReports(data);
+        });
+        getReportersChart(peroid).then((data) => {
+            setReporters(data);
+        });
+    }
     const getDateRange = (days) => {
         if (days === "0") {
             const today = format(new Date(), "yyyy-MM-dd");
@@ -114,7 +132,7 @@ export default function ReportsChart({ reports, reporters }) {
     const reporterData = filterDataByDateRange(
         reporters,
         dateRange,
-        "reportDate"
+        "createdAt"
     ); // Adjust the field name if necessary
 
     return (
@@ -141,7 +159,10 @@ export default function ReportsChart({ reports, reporters }) {
                 </Typography>
                 <Select
                     value={dateRange}
-                    onChange={(e) => setDateRange(e.target.value)}
+                    onChange={(e) => {
+                        setDateRange(e.target.value);
+                        updateData(e.target.value);
+                    }}
                     // sx={{
                     //     backgroundColor: "white",
                     //     minWidth: 120, // Adjust the width as per your requirement

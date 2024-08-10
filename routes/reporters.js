@@ -5,6 +5,7 @@ const authMiddleware = require('../handler/authMiddleware');
 const User = require('../schemas/users');
 const Logs = require('../schemas/log');
 const Dump = require('../schemas/dump');
+const { application } = require('express');
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const { count } = req.query;
@@ -12,7 +13,13 @@ router.get('/', authMiddleware, async (req, res) => {
             const reporter = await Reporter.find().limit(parseInt(count)).sort({ reportDate: -1 });
             res.status(200).json(reporter);
         } else {
-            const reporter = await Reporter.find().sort({ reportDate: -1 });
+            const requiredFields = ['firstName', 'lastName', 'phoneNumber', 'city'];
+            const pipeline = [{
+                $match: {
+                    $and: requiredFields.map(field => ({ [field]: { $exists: true, $ne: null } }))
+                }
+            }];
+            const reporter = await Reporter.aggregate(pipeline).sort({ reportDate: -1 });
             res.status(200).json(reporter);
         }
     } catch (err) {
@@ -20,6 +27,50 @@ router.get('/', authMiddleware, async (req, res) => {
         res.status(400).json(err);
     }
 });
+router.get('/search', authMiddleware, async (req, res) => {
+    try {
+        const { search } = req.query;
+        const reporter = await Reporter.find({ $text: { $search: search } });
+        res.status(200).json(reporter);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
+
+router.get('/chart', authMiddleware, async (req, res) => {
+    const { peroid } = req.query;
+    const date = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+    switch (peroid) {
+        case "1":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            break;
+        case "7":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 7);
+            break;
+        case "14":
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 14);
+            break;
+        case "30":
+            startDate = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate());
+            break;
+        case "60":
+            startDate = new Date(date.getFullYear(), date.getMonth() - 2, date.getDate());
+            break;
+        default:
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            break;
+    }
+    const reporter = await Reporter.find({ createdAt: { $gte: startDate, $lt: endDate } });
+    const chartData = reporter.map((reporter) => {
+        return {
+            createdAt: reporter.createdAt,
+        }
+    });
+    res.status(200).json(chartData);
+})
 
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
