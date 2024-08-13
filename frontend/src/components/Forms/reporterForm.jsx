@@ -105,7 +105,7 @@ export function ReporterForm({ reporter }) {
                 <Box mb={2}>
                     <InputLabel
                         id="reporterPosition-label"
-                        name="reportStatus"
+                        name="reporterPosition"
                         sx={{
                             textAlign: "left",
                             display: "flex",

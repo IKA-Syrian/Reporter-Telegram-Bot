@@ -198,6 +198,7 @@ export function ReportsComp({ reports }) {
                                 </TableCell>
                             ))}
                             <TableCell>المرفقات</TableCell>
+                            <TableCell>الحالة</TableCell>
                             <TableCell>التعديل</TableCell>
                             <TableCell>الحذف</TableCell>
                         </TableRow>
@@ -337,6 +338,18 @@ export function ReportsComp({ reports }) {
                                             </h2>
                                         )}
                                     </div>
+                                </TableCell>
+                                <TableCell>
+                                    <span
+                                        className={`pulsate ${
+                                            report.reportStatus === "accepted"
+                                                ? "verified"
+                                                : report.reportStatus ===
+                                                  "rejected"
+                                                ? "blocked"
+                                                : "pending"
+                                        }`}
+                                    />
                                 </TableCell>
                                 <TableCell>
                                     <IconButton

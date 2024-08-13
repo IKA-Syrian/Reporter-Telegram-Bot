@@ -39,8 +39,10 @@ export function ReportForm({ report }) {
         reportAttachments: report.reportAttachments,
         reportDate: report.reportDate,
         reportStatus: report.reportStatus,
+        rejectionReason: "",
     });
     const [modalOpen, setModalOpen] = useState(false);
+    const [reasonModalOpen, setReasonModalOpen] = useState(false);
     const [selectedAttachment, setSelectedAttachment] = useState(null);
 
     const handleChange = (e) => {
@@ -49,6 +51,11 @@ export function ReportForm({ report }) {
             ...formData,
             [name]: type === "checkbox" ? checked : DOMPurify.sanitize(value),
         });
+
+        // Open reason modal if status is changed to "rejected"
+        if (name === "reportStatus" && value === "rejected") {
+            setReasonModalOpen(true);
+        }
     };
 
     const handleAttachmentClick = (attachment) => {
@@ -80,11 +87,22 @@ export function ReportForm({ report }) {
         setModalOpen(false);
     };
 
+    const handleReasonSubmit = () => {
+        if (formData.rejectionReason.trim() === "") {
+            alert("يرجى إدخال سبب الرفض.");
+            return;
+        }
+        setReasonModalOpen(false);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
+        if (formData.reportStatus === "rejected" && !formData.rejectionReason) {
+            alert("يرجى إدخال سبب الرفض قبل تعديل التقرير.");
+            return;
+        }
         updateReport(report.reportID, formData)
-            .then((response) => {
+            .then(() => {
                 window.location.href = "/dashboard/reports";
             })
             .catch((err) => {
@@ -96,7 +114,7 @@ export function ReportForm({ report }) {
         <Paper sx={{ p: 3, maxWidth: 600, mx: "auto", mt: 4 }} color="primary">
             <Box sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
-                    Report Form
+                    تعديل التقرير
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <Box mb={2}>
@@ -192,7 +210,6 @@ export function ReportForm({ report }) {
                     <Box mb={2}>
                         <InputLabel
                             id="reportStatus-label"
-                            name="reportStatus"
                             sx={{
                                 textAlign: "left",
                                 display: "flex",
@@ -203,7 +220,7 @@ export function ReportForm({ report }) {
                         <Select
                             fullWidth
                             labelId="reportStatus-label"
-                            id="reportStatus"
+                            name="reportStatus"
                             value={formData.reportStatus}
                             label="حالة التقرير"
                             onChange={handleChange}
@@ -218,7 +235,7 @@ export function ReportForm({ report }) {
                                 قيد الانتظار
                             </MenuItem>
                             <MenuItem
-                                value="approved"
+                                value="accepted"
                                 sx={{ display: "block", textAlign: "center" }}
                             >
                                 تم الموافقة
@@ -230,17 +247,6 @@ export function ReportForm({ report }) {
                                 تم الرفض
                             </MenuItem>
                         </Select>
-                    </Box>
-                    <Box mb={2}>
-                        <TextField
-                            fullWidth
-                            type="date"
-                            label="تاريخ التقرير"
-                            name="reportDate"
-                            value={formData.reportDate}
-                            onChange={handleChange}
-                            InputLabelProps={{ shrink: true }}
-                        />
                     </Box>
                     <Button type="submit" variant="contained" color="primary">
                         تعديل
@@ -298,6 +304,48 @@ export function ReportForm({ report }) {
                                 <Delete />
                             </IconButton>
                         </Box>
+                    </Paper>
+                </Modal>
+
+                <Modal
+                    open={reasonModalOpen}
+                    onClose={() => setReasonModalOpen(false)}
+                    aria-labelledby="modal-reason-title"
+                    aria-describedby="modal-reason-description"
+                >
+                    <Paper sx={modalStyle}>
+                        <Typography
+                            id="modal-reason-title"
+                            variant="h6"
+                            textAlign="center"
+                        >
+                            سبب الرفض
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            label="أدخل سبب الرفض"
+                            name="rejectionReason"
+                            value={formData.rejectionReason}
+                            onChange={handleChange}
+                            sx={{
+                                mt: 2,
+                                fontSize: "24px",
+                                "& textarea": {
+                                    fontSize: "18px",
+                                    textAlign: "left",
+                                },
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleReasonSubmit}
+                            sx={{ mt: 2 }}
+                        >
+                            حفظ
+                        </Button>
                     </Paper>
                 </Modal>
             </Box>

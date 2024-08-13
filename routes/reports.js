@@ -1,10 +1,25 @@
 const router = require('express').Router();
+const fetch = require('node-fetch');
 const path = require('path')
 const Reports = require('../schemas/reports');
 const User = require('../schemas/users');
 const authMiddleware = require('../handler/authMiddleware');
 const Logs = require('../schemas/log');
 const Dump = require('../schemas/dump');
+
+async function sendTelegramMessage(chatID, message) {
+    try {
+        const { TELEGRAM_URL, TOKEN } = process.env;
+        const url = `${TELEGRAM_URL}/bot${TOKEN}/sendMessage?chat_id=${chatID}&text=${message}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+}
+
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const { count } = req.query;
@@ -94,7 +109,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
     try {
-        const { reportID, reportDate, reportType, reportDescription, reportStatus, reportAttachments } = req.body.data;
+        const { reportID, reportDate, reportType, reportDescription, reportStatus, reportAttachments, rejectionReason } = req.body.data;
         const user = await User.findOne({ username: req.body.username });
         if (!user) {
             res.status(400).json({
@@ -103,6 +118,18 @@ router.put('/:id', authMiddleware, async (req, res) => {
             return;
         }
         const prvData = await Reports.findOne({ reportID: req.params.id });
+        switch (reportStatus) {
+            case 'accepted':
+                message = `لقد تم قبول تقريرك الذي يحمل الرقم ${reportID}، شكراً لك.`;
+                sendTelegramMessage(prvData.TelegramId, message);
+                break;
+            case 'rejected':
+                message = `لقد تم رفض تقريرك الذي يحمل الرقم ${reportID}، بسبب ${rejectionReason}، يرجى التأكد من البيانات المدخلة وإعادة المحاولة.`;
+                sendTelegramMessage(prvData.TelegramId, message);
+                break;
+            default:
+                reportStatus = 'Pending';
+        }
         const newData = await Reports.findOneAndUpdate({ reportID: req.params.id }, { reportID, reportDate, reportType, reportDescription, reportStatus, reportAttachments }, { new: true });
         const userId = user._id;
         const log = new Logs({

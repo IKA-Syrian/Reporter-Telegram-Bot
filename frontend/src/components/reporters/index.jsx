@@ -16,6 +16,12 @@ import {
     TableContainer,
     TableSortLabel,
     Pagination,
+    MenuItem,
+    Select,
+    InputLabel,
+    FormControl,
+    ListItemText,
+    OutlinedInput,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { deleteReporter } from "../../service/reporters";
@@ -28,6 +34,14 @@ export function ReportersComp({ reporters }) {
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 25;
+
+    const [filterStatus, setFilterStatus] = useState([]);
+
+    const statusOptions = [
+        { label: "مفعل", value: "verified" },
+        { label: "غير مفعل", value: "unverified" },
+        { label: "محظور", value: "blocked" },
+    ];
 
     useEffect(() => {
         setSortedReporters([...reporters]);
@@ -98,17 +112,38 @@ export function ReportersComp({ reporters }) {
         });
     };
 
-    const filteredReporters = sortedReporters.filter(
-        (reporter) =>
-            reporter.firstName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            reporter.lastName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            reporter.phoneNumber.includes(searchTerm) ||
-            reporter.city.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleFilterChange = (event) => {
+        setFilterStatus(event.target.value);
+    };
+
+    const filteredReporters = sortedReporters
+        .filter(
+            (reporter) =>
+                reporter.firstName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                reporter.lastName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                reporter.phoneNumber.includes(searchTerm) ||
+                reporter.city.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .filter((reporter) => {
+            if (filterStatus.includes("verified") && !reporter.Verified) {
+                return false;
+            }
+            if (
+                filterStatus.includes("unverified") &&
+                reporter.Verified &&
+                !reporter.isBlocked
+            ) {
+                return false;
+            }
+            if (filterStatus.includes("blocked") && !reporter.isBlocked) {
+                return false;
+            }
+            return true;
+        });
 
     const paginatedReporters = filteredReporters.slice(
         (currentPage - 1) * recordsPerPage,
@@ -123,31 +158,71 @@ export function ReportersComp({ reporters }) {
                 mb={2}
                 sx={{ color: "white" }}
             >
-                <TextField
-                    label="البحث"
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputLabelProps={{
-                        style: { color: "white" },
-                    }}
-                    InputProps={{
-                        style: { color: "white", borderColor: "white" },
-                    }}
-                    sx={{
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: "white",
+                <Box display="flex" gap={2}>
+                    <TextField
+                        label="البحث"
+                        variant="outlined"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        InputLabelProps={{
+                            style: { color: "white" },
+                        }}
+                        InputProps={{
+                            style: { color: "white", borderColor: "white" },
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white",
+                                },
                             },
-                            "&:hover fieldset": {
-                                borderColor: "white",
-                            },
-                            "&.Mui-focused fieldset": {
-                                borderColor: "white",
-                            },
-                        },
-                    }}
-                />
+                        }}
+                    />
+                    <FormControl sx={{ minWidth: 200 }}>
+                        <InputLabel id="filter-status-label">
+                            فلتر الحالة
+                        </InputLabel>
+                        <Select
+                            labelId="filter-status-label"
+                            id="filter-status"
+                            multiple
+                            value={filterStatus}
+                            onChange={handleFilterChange}
+                            input={<OutlinedInput label="فلتر الحالة" />}
+                            renderValue={(selected) =>
+                                selected
+                                    .map(
+                                        (value) =>
+                                            statusOptions.find(
+                                                (option) =>
+                                                    option.value === value
+                                            )?.label
+                                    )
+                                    .join(", ")
+                            }
+                        >
+                            {statusOptions.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    <Checkbox
+                                        checked={filterStatus.includes(
+                                            option.value
+                                        )}
+                                    />
+                                    <ListItemText primary={option.label} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
                 <Button
                     variant="contained"
                     sx={{

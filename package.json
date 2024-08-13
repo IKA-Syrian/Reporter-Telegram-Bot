@@ -8,7 +8,7 @@
         "start:api": "node app.js",
         "dev:api": "nodemon app.js",
         "dev:frontend": "cd frontend && npm run dev",
-        "build:frontend": "cd frontend && npm run build"
+        "build:frontend": "cd frontend && npm run build && cp -r dist /var/www"
     },
     "repository": {
         "type": "git",
