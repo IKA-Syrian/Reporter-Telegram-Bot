@@ -23,7 +23,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { saveAs } from "file-saver";
 import { getMetaData, getMedia } from "../../service/media";
 import { format, parseISO } from "date-fns";
-import 
 
 export function SingleReportComp({ report }) {
     const [reporter, setReporter] = useState(null);
