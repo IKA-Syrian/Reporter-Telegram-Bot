@@ -14,6 +14,8 @@ import {
     MenuItem,
     Select,
     InputLabel,
+    OutlinedInput,
+    FormControl,
 } from "@mui/material";
 import { Delete, Download } from "@mui/icons-material";
 import ReactPlayer from "react-player";
@@ -208,45 +210,56 @@ export function ReportForm({ report }) {
                         </Box>
                     </Box>
                     <Box mb={2}>
-                        <InputLabel
-                            id="reportStatus-label"
-                            sx={{
-                                textAlign: "left",
-                                display: "flex",
-                            }}
-                        >
-                            حالة التقرير
-                        </InputLabel>
-                        <Select
-                            fullWidth
-                            labelId="reportStatus-label"
-                            name="reportStatus"
-                            value={formData.reportStatus}
-                            label="حالة التقرير"
-                            onChange={handleChange}
-                            sx={{
-                                display: "block",
-                            }}
-                        >
-                            <MenuItem
-                                value="pending"
-                                sx={{ display: "block", textAlign: "center" }}
+                        <FormControl fullWidth>
+                            <InputLabel
+                                id="reportStatus-label"
+                                // sx={{
+                                //     textAlign: "left",
+                                //     display: "flex",
+                                // }}
                             >
-                                قيد الانتظار
-                            </MenuItem>
-                            <MenuItem
-                                value="accepted"
-                                sx={{ display: "block", textAlign: "center" }}
+                                حالة التقرير
+                            </InputLabel>
+                            <Select
+                                fullWidth
+                                labelId="reportStatus-label"
+                                name="reportStatus"
+                                value={formData.reportStatus}
+                                label="حالة التقرير"
+                                onChange={handleChange}
+                                sx={{
+                                    display: "block",
+                                }}
                             >
-                                تم الموافقة
-                            </MenuItem>
-                            <MenuItem
-                                value="rejected"
-                                sx={{ display: "block", textAlign: "center" }}
-                            >
-                                تم الرفض
-                            </MenuItem>
-                        </Select>
+                                <MenuItem
+                                    value="pending"
+                                    sx={{
+                                        display: "block",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    قيد الانتظار
+                                </MenuItem>
+                                <MenuItem
+                                    value="accepted"
+                                    sx={{
+                                        display: "block",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    تم الموافقة
+                                </MenuItem>
+                                <MenuItem
+                                    value="rejected"
+                                    sx={{
+                                        display: "block",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    تم الرفض
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                     </Box>
                     <Button type="submit" variant="contained" color="primary">
                         تعديل

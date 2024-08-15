@@ -23,8 +23,10 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { saveAs } from "file-saver";
 import { getMetaData, getMedia } from "../../service/media";
 import { format, parseISO } from "date-fns";
+import 
 
 export function SingleReportComp({ report }) {
+    const [reporter, setReporter] = useState(null);
     const [selectedAttachment, setSelectedAttachment] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedAttachments, setSelectedAttachments] = useState([]);
@@ -131,7 +133,7 @@ export function SingleReportComp({ report }) {
     };
 
     return (
-        <Box maxWidth="800px" margin="auto" padding="20px">
+        <Box maxWidth="1100px" margin="auto" padding="20px">
             <Typography
                 variant="h4"
                 gutterBottom
@@ -191,6 +193,8 @@ export function SingleReportComp({ report }) {
                                 textOverflow: "ellipsis",
                                 color: "text.Secondary",
                                 textAlign: "left",
+                                maxHeight: "350px",
+                                overflowY: "auto",
                             }}
                         >
                             {report.reportDescription}

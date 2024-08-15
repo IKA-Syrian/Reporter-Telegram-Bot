@@ -16,6 +16,12 @@ import {
     TableContainer,
     TableSortLabel,
     Pagination,
+    FormControl,
+    InputLabel,
+    Select,
+    OutlinedInput,
+    MenuItem,
+    ListItemText,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { deleteReport } from "../../service/reports";
@@ -29,6 +35,13 @@ export function ReportsComp({ reports }) {
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 5;
 
+    const [filterStatus, setFilterStatus] = useState([]);
+    const statusOptions = [
+        { label: "مقبول", value: "accepted" },
+        { label: "في الانتظار", value: "pending" },
+        { label: "مرفوض", value: "rejected" },
+    ];
+
     useEffect(() => {
         setSortedReports([...reports]);
     }, [reports]);
@@ -40,7 +53,9 @@ export function ReportsComp({ reports }) {
     const handleReportEdit = (reportID) => {
         navigate(`/dashboard/reports/${reportID}/edit`);
     };
-
+    const handleFilterChange = (event) => {
+        setFilterStatus(event.target.value);
+    };
     const handleDelete = (reportIDs) => {
         const ConfirmationMessage = window.confirm(
             `Are you sure you want to delete ${
@@ -97,11 +112,30 @@ export function ReportsComp({ reports }) {
         });
     };
 
-    const filteredReports = sortedReports.filter(
-        (report) =>
-            report.reportTitle.includes(searchTerm) ||
-            report.reportDescription.toLowerCase().includes(searchTerm)
-    );
+    const filteredReports = sortedReports
+        .filter(
+            (report) =>
+                report.reportTitle.includes(searchTerm) ||
+                report.reportDescription.toLowerCase().includes(searchTerm)
+        )
+        .filter((report) => {
+            if (
+                filterStatus.includes("accepted") &&
+                report.reportStatus === "accepted"
+            )
+                return true;
+            if (
+                filterStatus.includes("pending") &&
+                report.reportStatus === "pending"
+            )
+                return true;
+            if (
+                filterStatus.includes("rejected") &&
+                report.reportStatus === "rejected"
+            )
+                return true;
+            if (filterStatus.length === 0) return true;
+        });
 
     const truncateText = (text, length) => {
         if (text.length > length) {
@@ -118,31 +152,71 @@ export function ReportsComp({ reports }) {
     return (
         <Box sx={{ p: 3 }}>
             <Box display="flex" justifyContent="space-between" mb={2}>
-                <TextField
-                    label="البحث"
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputLabelProps={{
-                        style: { color: "white" },
-                    }}
-                    InputProps={{
-                        style: { color: "white", borderColor: "white" },
-                    }}
-                    sx={{
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: "white",
+                <Box display="flex" gap={2}>
+                    <TextField
+                        label="البحث"
+                        variant="outlined"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        InputLabelProps={{
+                            style: { color: "white" },
+                        }}
+                        InputProps={{
+                            style: { color: "white", borderColor: "white" },
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white",
+                                },
                             },
-                            "&:hover fieldset": {
-                                borderColor: "white",
-                            },
-                            "&.Mui-focused fieldset": {
-                                borderColor: "white",
-                            },
-                        },
-                    }}
-                />
+                        }}
+                    />
+                    <FormControl sx={{ minWidth: 200 }}>
+                        <InputLabel id="filter-status-label">
+                            فلتر الحالة
+                        </InputLabel>
+                        <Select
+                            labelId="filter-status-label"
+                            id="filter-status"
+                            multiple
+                            value={filterStatus}
+                            onChange={handleFilterChange}
+                            input={<OutlinedInput label="فلتر الحالة" />}
+                            renderValue={(selected) =>
+                                selected
+                                    .map(
+                                        (value) =>
+                                            statusOptions.find(
+                                                (option) =>
+                                                    option.value === value
+                                            )?.label
+                                    )
+                                    .join(", ")
+                            }
+                        >
+                            {statusOptions.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    <Checkbox
+                                        checked={filterStatus.includes(
+                                            option.value
+                                        )}
+                                    />
+                                    <ListItemText primary={option.label} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
                 <Button
                     variant="contained"
                     sx={{

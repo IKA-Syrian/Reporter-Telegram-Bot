@@ -12,6 +12,7 @@ import {
     MenuItem,
     Select,
     InputLabel,
+    FormControl,
 } from "@mui/material";
 import DOMPurify from "dompurify";
 
@@ -103,36 +104,41 @@ export function ReporterForm({ reporter }) {
                     />
                 </Box>
                 <Box mb={2}>
-                    <InputLabel
-                        id="reporterPosition-label"
-                        name="reporterPosition"
-                        sx={{
-                            textAlign: "left",
-                            display: "flex",
-                        }}
-                    >
-                        الصفة
-                    </InputLabel>
-                    <Select
-                        fullWidth
-                        labelId="reporterPosition-label"
-                        id="reporterPosition"
-                        value={formData.position}
-                        label="الصفة"
-                        onChange={handleChange}
-                        sx={{
-                            display: "block",
-                        }}
-                    >
-                        {positions.map((position) => (
-                            <MenuItem
-                                value={position}
-                                sx={{ display: "block", textAlign: "center" }}
-                            >
-                                {position}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <FormControl fullWidth>
+                        <InputLabel
+                            id="reporterPosition-label"
+                            name="reporterPosition"
+                            sx={{
+                                textAlign: "left",
+                                display: "flex",
+                            }}
+                        >
+                            الصفة
+                        </InputLabel>
+                        <Select
+                            fullWidth
+                            labelId="reporterPosition-label"
+                            id="reporterPosition"
+                            value={formData.position}
+                            label="الصفة"
+                            onChange={handleChange}
+                            sx={{
+                                display: "block",
+                            }}
+                        >
+                            {positions.map((position) => (
+                                <MenuItem
+                                    value={position}
+                                    sx={{
+                                        display: "block",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    {position}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Box>
                 <Box mb={2}>
                     <FormControlLabel

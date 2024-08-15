@@ -130,17 +130,56 @@ export function ReportersComp({ reporters }) {
         )
         .filter((reporter) => {
             if (filterStatus.includes("verified") && !reporter.Verified) {
-                return false;
+                if (filterStatus.includes("blocked") && reporter.isBlocked) {
+                    return true;
+                } else if (
+                    filterStatus.includes("unverified") &&
+                    !reporter.isBlocked
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (
+                filterStatus.includes("verified") &&
+                filterStatus.includes("unverified") &&
+                filterStatus.includes("blocked")
+            ) {
+                if (reporter.Verified || reporter.isBlocked) {
+                    return true;
+                }
             }
             if (
                 filterStatus.includes("unverified") &&
-                reporter.Verified &&
-                !reporter.isBlocked
+                filterStatus.includes("blocked")
+            ) {
+                return !reporter.Verified || reporter.isBlocked;
+            }
+            if (
+                filterStatus.includes("unverified") &&
+                filterStatus.includes("verified")
+            ) {
+                return !reporter.Verified || reporter.Verified;
+            }
+            if (
+                filterStatus.includes("unverified") &&
+                (reporter.Verified || reporter.isBlocked)
             ) {
                 return false;
             }
+
             if (filterStatus.includes("blocked") && !reporter.isBlocked) {
-                return false;
+                if (filterStatus.includes("verified") && reporter.Verified) {
+                    return true;
+                } else if (
+                    filterStatus.includes("unverified") &&
+                    !reporter.Verified
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
             return true;
         });

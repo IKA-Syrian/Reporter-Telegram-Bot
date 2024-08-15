@@ -17,6 +17,12 @@ import {
     TableContainer,
     TableSortLabel,
     Pagination,
+    FormControl,
+    InputLabel,
+    Select,
+    OutlinedInput,
+    MenuItem,
+    ListItemText,
 } from "@mui/material";
 import {
     Delete as DeleteIcon,
@@ -34,6 +40,13 @@ export function UsersComp({ users }) {
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 25;
 
+    const [filterStatus, setFilterStatus] = useState([]);
+
+    const statusOptions = [
+        { label: "مدير", value: "admin" },
+        { label: "مستخدم عادي", value: "member" },
+    ];
+
     useEffect(() => {
         setSortedUsers([...users]);
     }, [users]);
@@ -45,7 +58,9 @@ export function UsersComp({ users }) {
     const handleUserEdit = (userId) => {
         navigate(`/dashboard/users/${userId}/edit`);
     };
-
+    const handleFilterChange = (event) => {
+        setFilterStatus(event.target.value);
+    };
     const handleDelete = (userIds) => {
         const ConfirmationMessage = window.confirm(
             `Are you sure you want to delete ${
@@ -104,12 +119,26 @@ export function UsersComp({ users }) {
     const handleAdd = () => {
         navigate("/dashboard/users/add");
     };
-    const filteredUsers = sortedUsers.filter(
-        (user) =>
-            user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user._id.toString().includes(searchTerm)
-    );
+    const filteredUsers = sortedUsers
+        .filter(
+            (user) =>
+                user.username
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user._id.toString().includes(searchTerm)
+        )
+        .filter((user) => {
+            if (filterStatus.includes("admin") && user.isAdmin) {
+                return true;
+            }
+            if (filterStatus.includes("member") && !user.isAdmin) {
+                return true;
+            }
+            if (filterStatus.length === 0) {
+                return true;
+            }
+        });
 
     const paginatedUsers = filteredUsers.slice(
         (currentPage - 1) * recordsPerPage,
@@ -123,31 +152,86 @@ export function UsersComp({ users }) {
                 mb={2}
                 sx={{ color: "white" }}
             >
-                <TextField
-                    label="البحث"
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputLabelProps={{
-                        style: { color: "white" },
-                    }}
-                    InputProps={{
-                        style: { color: "white", borderColor: "white" },
-                    }}
-                    sx={{
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: "white",
+                <Box display="flex" gap={2}>
+                    <TextField
+                        label="البحث"
+                        variant="outlined"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        InputLabelProps={{
+                            style: { color: "white" },
+                        }}
+                        InputProps={{
+                            style: { color: "white", borderColor: "white" },
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white",
+                                },
                             },
-                            "&:hover fieldset": {
-                                borderColor: "white",
+                        }}
+                    />
+                    <FormControl
+                        sx={{
+                            minWidth: 200,
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white",
+                                },
                             },
-                            "&.Mui-focused fieldset": {
-                                borderColor: "white",
-                            },
-                        },
-                    }}
-                />
+                        }}
+                    >
+                        <InputLabel id="filter-status-label">
+                            فلتر الحالة
+                        </InputLabel>
+                        <Select
+                            labelId="filter-status-label"
+                            id="filter-status"
+                            multiple
+                            value={filterStatus}
+                            onChange={handleFilterChange}
+                            input={<OutlinedInput label="فلتر الحالة" />}
+                            renderValue={(selected) =>
+                                selected
+                                    .map(
+                                        (value) =>
+                                            statusOptions.find(
+                                                (option) =>
+                                                    option.value === value
+                                            )?.label
+                                    )
+                                    .join(", ")
+                            }
+                        >
+                            {statusOptions.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    <Checkbox
+                                        checked={filterStatus.includes(
+                                            option.value
+                                        )}
+                                    />
+                                    <ListItemText primary={option.label} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
                 <Box display="flex" justifyContent="space-between" mb={2}>
                     <IconButton
                         color="primary"
@@ -194,8 +278,9 @@ export function UsersComp({ users }) {
                             </TableCell>
                             {[
                                 { key: "_id", label: "المعرف" },
-                                { key: "username", label: "الأسم الاول" },
-                                { key: "email", label: "الأسم الأخير" },
+                                { key: "username", label: "الاسم" },
+                                { key: "email", label: "البريد الإلكتروني" },
+                                { key: "isAdmin", label: "مدير" },
                             ].map((column) => (
                                 <TableCell
                                     key={column.key}
@@ -240,6 +325,9 @@ export function UsersComp({ users }) {
                                 </TableCell>
                                 <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell>
+                                    {user.isAdmin ? "نعم" : "لا"}
+                                </TableCell>
                                 <TableCell>
                                     <IconButton
                                         color="primary"
