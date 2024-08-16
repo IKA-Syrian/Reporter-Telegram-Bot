@@ -2,7 +2,7 @@
 
 # Update package list and install prerequisites
 sudo apt update
-sudo apt install -y curl gnupg software-properties-common gperf zlib1g-dev cmake g++ wget git libssl-dev openssl
+sudo apt install -y curl gnupg software-properties-common gperf zlib1g-dev cmake g++ wget git libssl-dev openssl ffmpeg
 
 # Install Node.js 20.15.1 and PM2
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -30,4 +30,5 @@ cd build
 cmake ..
 cmake --build . --target install
 
-node app
+mkdir -p /var/www/telegram-image-src/
+

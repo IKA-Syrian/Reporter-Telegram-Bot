@@ -1,0 +1,11 @@
+[Unit]
+Description=Move New Files Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/Reporter-Telegram-Bot/move_new_files.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
