@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { deleteReport } from "../../service/reports";
-
+const APP_URL = import.meta.env.VITE_APP_URL;
 export function ReportsComp({ reports }) {
     const navigate = useNavigate();
     const [selectedReports, setSelectedReports] = useState([]);
@@ -332,7 +332,7 @@ export function ReportsComp({ reports }) {
                                                     .slice(0, 5)
                                                     .map((attachment) => {
                                                         const filePath =
-                                                            "https://media.iaulibrary.com/" +
+                                                            APP_URL +
                                                             attachment.filePath
                                                                 .split("/")
                                                                 .slice(4)

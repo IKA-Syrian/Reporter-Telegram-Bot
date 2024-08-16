@@ -23,6 +23,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { saveAs } from "file-saver";
 import { getMetaData, getMedia } from "../../service/media";
 import { format, parseISO } from "date-fns";
+const APP_URL = import.meta.env.VITE_APP_URL;
 
 export function SingleReportComp({ report }) {
     const [reporter, setReporter] = useState(null);
@@ -253,7 +254,7 @@ export function SingleReportComp({ report }) {
                                             <CardMedia
                                                 component="img"
                                                 height="100"
-                                                image={`https://media.iaulibrary.com/${attachment.filePath
+                                                image={`${APP_URL}/${attachment.filePath
                                                     .split("/")
                                                     .slice(4)
                                                     .join("/")}`}
@@ -263,7 +264,7 @@ export function SingleReportComp({ report }) {
                                               "video"
                                           ) ? (
                                             <ReactPlayer
-                                                url={`https://media.iaulibrary.com/${attachment.filePath
+                                                url={`${APP_URL}/${attachment.filePath
                                                     .split("/")
                                                     .slice(4)
                                                     .join("/")}`}
@@ -324,7 +325,7 @@ export function SingleReportComp({ report }) {
                                 <Card>
                                     <CardMedia
                                         component="img"
-                                        image={`https://media.iaulibrary.com/${selectedAttachment.filePath
+                                        image={`${APP_URL}/${selectedAttachment.filePath
                                             .split("/")
                                             .slice(4)
                                             .join("/")}`}
@@ -336,7 +337,7 @@ export function SingleReportComp({ report }) {
                                   "video"
                               ) ? (
                                 <ReactPlayer
-                                    url={`https://media.iaulibrary.com/${selectedAttachment.filePath
+                                    url={`${APP_URL}/${selectedAttachment.filePath
                                         .split("/")
                                         .slice(4)
                                         .join("/")}`}
