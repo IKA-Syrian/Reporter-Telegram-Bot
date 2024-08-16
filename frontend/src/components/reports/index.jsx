@@ -333,6 +333,7 @@ export function ReportsComp({ reports }) {
                                                     .map((attachment) => {
                                                         const filePath =
                                                             APP_URL +
+                                                            "/" +
                                                             attachment.filePath
                                                                 .split("/")
                                                                 .slice(4)
