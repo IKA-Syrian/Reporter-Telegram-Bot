@@ -108,7 +108,12 @@ router.put('/:id', authMiddleware, async (req, res) => {
             return;
         }
         const prvData = await Reporter.findOne({ TelegramId: req.params.id });
-        const newData = await Reporter.findOneAndUpdate({ TelegramId: req.params.id }, { firstName, lastName, phoneNumber, city, Verified, isBlocked }, { new: true });
+        if (prvData.isBlocked === true && isBlocked === false) {
+            invalidAttempts = 0;
+            newData = await Reporter.findOneAndUpdate({ TelegramId: req.params.id }, { firstName, lastName, phoneNumber, city, Verified, isBlocked, invalidAttempts }, { new: true });
+        } else {
+            newData = await Reporter.findOneAndUpdate({ TelegramId: req.params.id }, { firstName, lastName, phoneNumber, city, Verified, isBlocked }, { new: true });
+        }
 
         console.log(newData)
         const log = new Logs({
