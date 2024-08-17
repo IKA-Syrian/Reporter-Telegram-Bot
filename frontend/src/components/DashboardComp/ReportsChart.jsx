@@ -60,10 +60,10 @@ export default function ReportsChart() {
     const [reporters, setReporters] = useState([]);
     const [dateRange, setDateRange] = useState("7");
     useEffect(() => {
-        getReportsChart().then((data) => {
+        getReportsChart(dateRange).then((data) => {
             setReports(data);
         });
-        getReportersChart().then((data) => {
+        getReportersChart(dateRange).then((data) => {
             setReporters(data);
         });
     }, []);
