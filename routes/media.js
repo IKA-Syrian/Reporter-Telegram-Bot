@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const routes = require('express').Router();
 const fs = require('fs')
 const path = require('path')
@@ -8,7 +10,7 @@ const Reports = require('../schemas/reports');
 const User = require('../schemas/users');
 const Logs = require('../schemas/log');
 const authMiddleware = require('../handler/authMiddleware');
-
+const { MEDIA_PATH } = process.env;
 async function getMediaInfo(filePath) {
     const mediaInfo = await mediaInfoFactory({ format: 'object' });
     const fileSize = fs.statSync(filePath).size;
@@ -124,7 +126,7 @@ routes.post('/download', authMiddleware, async (req, res) => {
         }
     });
     const fileName = `${attachment.file_unique_id}.${attachment.mime_type}`;
-    const fileAbsoultePath = `/root/telegram-image-src/${filePath.split('/').slice(4).join('/')}`;
+    const fileAbsoultePath = `${MEDIA_PATH}/${filePath.split('/').slice(4).join('/')}`;
     return res.download(fileAbsoultePath, fileName, (err) => {
         if (err) {
             console.log(err);
