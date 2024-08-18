@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const path = require('path')
 const Reporter = require('../schemas/reporter');
+const Reports = require('../schemas/reports');
 const authMiddleware = require('../handler/authMiddleware');
 const User = require('../schemas/users');
 const Logs = require('../schemas/log');
@@ -75,7 +76,9 @@ router.get('/chart', authMiddleware, async (req, res) => {
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
         const reporter = await Reporter.findOne({ TelegramId: req.params.id });
-        res.status(200).json(reporter);
+        const reports = await Reports.find({ TelegramId: req.params.id }).sort({ reportDate: -1 });
+
+        res.status(200).json({ ...reporter._doc, reports });
     } catch (err) {
         console.log(err);
         res.status(400).json(err);

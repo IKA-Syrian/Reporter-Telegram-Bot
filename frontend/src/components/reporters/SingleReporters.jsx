@@ -76,7 +76,34 @@ export function SingleReporterComp({ reporter }) {
     return (
         <StyledCard>
             <CardContent>
-                <TitleTypography variant="h5">تفاصيل المراسل</TitleTypography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                    }}
+                >
+                    <TitleTypography variant="h5">
+                        تفاصيل المراسل
+                    </TitleTypography>
+                    <ActionsContainer>
+                        <IconButton
+                            color="primary"
+                            onClick={() =>
+                                handleReporterEdit(reporter.TelegramId)
+                            }
+                        >
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton
+                            color="secondary"
+                            onClick={() => handleDelete(reporter.TelegramId)}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </ActionsContainer>
+                </Box>
+
                 <Divider sx={{ mb: 2 }} />
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -101,20 +128,6 @@ export function SingleReporterComp({ reporter }) {
                     </Grid>
                 </Grid>
             </CardContent>
-            <ActionsContainer>
-                <IconButton
-                    color="primary"
-                    onClick={() => handleReporterEdit(reporter.TelegramId)}
-                >
-                    <EditIcon />
-                </IconButton>
-                <IconButton
-                    color="secondary"
-                    onClick={() => handleDelete(reporter.TelegramId)}
-                >
-                    <DeleteIcon />
-                </IconButton>
-            </ActionsContainer>
         </StyledCard>
     );
 }

@@ -357,7 +357,8 @@ export function ReportersComp({ reporters }) {
                                 <TableCell>
                                     <span
                                         className={`pulsate ${
-                                            reporter.Verified
+                                            reporter.Verified &&
+                                            !reporter.isBlocked
                                                 ? "verified"
                                                 : reporter.isBlocked
                                                 ? "blocked"

@@ -182,6 +182,45 @@ router.post('/', async (req, res) => {
                     });
                     return res.status(200).send('OK');
                 }
+            } else if (text === '/myreports') {
+                const reports = await Report.find({ TelegramId: chatId });
+                if (reports.length > 0) {
+                    let reportText = '<u><b>لديك التقارير التالية:</b></u>\n';
+                    reports.forEach(async report => {
+                        reportText += `
+${report.reportID} - ${report.reportTitle} 
+                        `;
+                        //  تمت إضافته في ${report.reportDate.toLocaleString('en-US', {
+                        //     timeZone: 'Asia/Aden',
+                        //     hour12: true,
+                        //     year: 'numeric',
+                        //     month: 'numeric',
+                        //     day: 'numeric',
+                        //     hour: '2-digit',
+                        //     minute: '2-digit',
+                        // })} بتوقيت اليمن.
+                    });
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: reportText,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                    return res.status(200).send('OK');
+                } else {
+                    await fetch(`${TELEGRAM_URL}/bot${process.env.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: 'ليس لديك تقارير.'
+                        })
+                    });
+                    return res.status(200).send('OK');
+                }
             } else {
                 console.log(`:::::::::::::::::::::::::::::::::::::::Data ${dataCount}:::::::::::::::::::::::::::::::::::::::::`)
                 dataCount++;
@@ -457,6 +496,7 @@ router.post('/', async (req, res) => {
                     }
                 }
             }
+            // if the bot is not responding to the message, return OK status uncomment the following line
             // res.status(200).send('OK');
         } catch (err) {
             console.error(err);
