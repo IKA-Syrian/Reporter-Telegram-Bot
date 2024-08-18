@@ -68,14 +68,6 @@ export function SingleReportComp({ report }) {
                         report.TelegramId
                     }.${attachment.filePath.split("/").pop().split(".").pop()}`
                 );
-                // link.setAttribute(
-                //     "download",
-                //     `${attachment.file_unique_id}.${attachment.filePath
-                //         .split("/")
-                //         .pop()
-                //         .split(".")
-                //         .pop()}`
-                // );
                 document.body.appendChild(link);
                 link.click();
 

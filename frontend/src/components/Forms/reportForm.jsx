@@ -20,7 +20,9 @@ import {
 import { Delete, Download } from "@mui/icons-material";
 import ReactPlayer from "react-player";
 import DOMPurify from "dompurify";
-
+import { getMetaData, getMedia } from "../../service/media";
+import { format, parseISO } from "date-fns";
+const APP_URL = import.meta.env.VITE_APP_URL;
 const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -65,19 +67,42 @@ export function ReportForm({ report }) {
         setModalOpen(true);
     };
 
-    const handleDownload = () => {
-        const link = document.createElement("a");
-        link.href = `https://media.iaulibrary.com/${selectedAttachment.filePath
-            .split("/")
-            .slice(4)
-            .join("/")}`;
-        link.download = selectedAttachment.filePath.split("/").pop();
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setModalOpen(false);
+    const handleDownload = async (attachment, report) => {
+        try {
+            const fileData = await getMedia(
+                attachment.filePath,
+                report.reportID
+            );
+            if (!fileData.error) {
+                console.log("File data:", fileData);
+                const blob = new Blob([fileData], {
+                    type: attachment.mimeType,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                const dateID = format(parseISO(report.reportDate), "yyyyMMdd");
+                link.setAttribute(
+                    "download",
+                    `${report.reportID}-${dateID}-${
+                        report.TelegramId
+                    }.${attachment.filePath.split("/").pop().split(".").pop()}`
+                );
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert("حدث خطأ أثناء تنزيل الملف");
+            }
+        } catch (error) {
+            console.error(
+                `Error downloading file ${attachment.filePath}:`,
+                error
+            );
+        }
     };
 
     const handleDelete = () => {
@@ -184,7 +209,7 @@ export function ReportForm({ report }) {
                                     ) ? (
                                         <CardMedia
                                             component="img"
-                                            image={`https://media.iaulibrary.com/${attachment.filePath
+                                            image={`${APP_URL}/${attachment.filePath
                                                 .split("/")
                                                 .slice(4)
                                                 .join("/")}`}
@@ -196,7 +221,7 @@ export function ReportForm({ report }) {
                                         />
                                     ) : (
                                         <ReactPlayer
-                                            url={`https://media.iaulibrary.com/${attachment.filePath
+                                            url={`${APP_URL}/${attachment.filePath
                                                 .split("/")
                                                 .slice(4)
                                                 .join("/")}`}
@@ -283,7 +308,7 @@ export function ReportForm({ report }) {
                                 ) ? (
                                     <CardMedia
                                         component="img"
-                                        image={`https://media.iaulibrary.com/${selectedAttachment.filePath
+                                        image={`${APP_URL}/${selectedAttachment.filePath
                                             .split("/")
                                             .slice(4)
                                             .join("/")}`}
@@ -292,7 +317,7 @@ export function ReportForm({ report }) {
                                     />
                                 ) : (
                                     <ReactPlayer
-                                        url={`https://media.iaulibrary.com/${selectedAttachment.filePath
+                                        url={`${APP_URL}/${selectedAttachment.filePath
                                             .split("/")
                                             .slice(4)
                                             .join("/")}`}
@@ -305,7 +330,9 @@ export function ReportForm({ report }) {
                         )}
                         <Box display="flex" justifyContent="space-between">
                             <IconButton
-                                onClick={handleDownload}
+                                onClick={() =>
+                                    handleDownload(selectedAttachment, report)
+                                }
                                 color="primary"
                             >
                                 <Download />
