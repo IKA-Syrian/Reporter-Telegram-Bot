@@ -73,6 +73,21 @@ async function addUser(data) {
     }
 }
 
+async function getUserInfo(userID) {
+    const token = getToken();
+    try {
+        const response = await axios.get(`${API_URL}/api/users/info/${userID}`, {
+            withCredentials: true,
+            headers: {
+                Authorization: token,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
 async function updateUser(id, data) {
     const token = getToken();
     try {
@@ -100,4 +115,4 @@ async function deleteUser(id) {
         return error.response.data;
     }
 }
-export { getUsers, getUser, login, logout, addUser, updateUser, deleteUser };
+export { getUsers, getUser, login, logout, addUser, getUserInfo, updateUser, deleteUser };

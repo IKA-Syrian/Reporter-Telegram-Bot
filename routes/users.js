@@ -28,6 +28,17 @@ router.get("/:username", authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/info/:id', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+        res.status(200).json(user);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
+
+
 router.post("/", authMiddleware, async (req, res) => {
     try {
         const { username, email, password, isAdmin } = req.body;
@@ -45,13 +56,19 @@ router.post("/", authMiddleware, async (req, res) => {
 
 router.put("/:id", authMiddleware, async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.findByIdAndUpdate(req.params.id, {
-            username,
-            email,
-            password: hashedPassword,
-        });
+        const { username, email, password, isAdmin } = req.body;
+        if (password && password !== '') {
+            hashedPassword = await bcrypt.hash(password, 10);
+            await User.findByIdAndUpdate(req.params.id, {
+                username,
+                email,
+                password: hashedPassword,
+                isAdmin: isAdmin || false,
+            });
+        } else {
+            await User.findByIdAndUpdate(req.params.id, { username, email, isAdmin: isAdmin || false });
+        }
+
         res.status(200).json({
             message: "User updated successfully",
         });
