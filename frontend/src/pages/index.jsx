@@ -10,3 +10,4 @@ export { Logs } from "./LogsPage";
 export { Users } from "./UsersPage";
 export { AddUser } from "./UsersPage/add";
 export { EditUser } from "./UsersPage/edit";
+export { SingleUser } from "./UsersPage/single";

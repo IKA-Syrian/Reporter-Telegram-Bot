@@ -65,7 +65,7 @@ export function SingleReporterComp({ reporter }) {
             deleteReporter(reporterId)
                 .then((response) => {
                     console.log(response);
-                    window.location.reload();
+                    navigate("/dashboard/reporters");
                 })
                 .catch((err) => {
                     console.log(err);

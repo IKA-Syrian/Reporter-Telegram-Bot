@@ -18,6 +18,7 @@ import {
     Users,
     AddUser,
     EditUser,
+    SingleUser,
 } from "./pages";
 const getCssVariable = (name) =>
     getComputedStyle(document.documentElement).getPropertyValue(name);
@@ -77,6 +78,10 @@ const App = () => (
                 <Route
                     path="/dashboard/users/:id/edit"
                     element={<EditUser />}
+                />
+                <Route
+                    path="/dashboard/users/:id/view"
+                    element={<SingleUser />}
                 />
                 <Route path="/dashboard/logs" element={<Logs />} />
                 <Route path="*" element={<h1>Not Found</h1>} />
